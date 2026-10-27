@@ -1,6 +1,6 @@
 ---
 name: strapi-product-egm
-description: Plan a Strapi product with Google's Elephant-Goldfish Model (EGM) — a business-value-first planning interview (idea → users → requirements → tech → Strapi spec → build spec) plus fresh-context "goldfish" reviews that stress-test the product brief, the technical design, and the build spec before any code is written. Sets up the EGM plugin if it is missing. Use when the user wants an EGM / elephant-goldfish / goldfish-reviewed product plan, asks to "stress-test" or get a "fresh-eyes review" of a Strapi product plan or build spec, or wants goldfish reviews of existing strapi-product-builder files (01-product.md … 06-build-spec.md).
+description: Plan a Strapi product with Google's Elephant-Goldfish Model (EGM) — a business-value-first planning interview (idea → users → requirements → tech → Strapi spec → build spec) plus fresh-context "goldfish" reviews that stress-test the product brief, the technical design, and the build spec before any code is written. Also reviews an EXISTING Strapi app: reconstructs its design from the code, checks it against Strapi standards, and turns the accepted findings into a reviewed change spec (and, on request, implements it on a branch). Sets up the EGM plugin if it is missing. Use when the user wants an EGM / elephant-goldfish / goldfish-reviewed product plan, asks to "stress-test" or get a "fresh-eyes review" of a Strapi product plan, build spec, or existing Strapi codebase, wants goldfish reviews of existing strapi-product-builder files (01-product.md … 06-build-spec.md), or wants to audit and improve a Strapi app with this method.
 ---
 
 # Strapi Product Builder — EGM edition
@@ -30,6 +30,14 @@ This file adds only the EGM layer:
 
 Where this file and `BUILDER.md` conflict, this file wins.
 
+## Modes
+
+| Mode | When | Follow |
+|---|---|---|
+| **New product** (default) | The user has an idea and no code | This file, from Step 0 |
+| **Review-only** | The user has planning files (01–06) to check | Step 0, then "Review-only mode" below |
+| **Existing app** | The user has a Strapi codebase to review and improve | Step 0 (steps 1–4), then `references/existing-app-mode.md` |
+
 **This skill's folder** is `${CLAUDE_SKILL_DIR}` in Claude Code (elsewhere: the folder that contains this file). Reviewers need absolute paths, so resolve every path you hand them against it. Never write review files or edits inside this folder.
 
 ## Files this skill writes
@@ -45,6 +53,8 @@ Where this file and `BUILDER.md` conflict, this file wins.
     └── review-log.md                  # one entry per checkpoint: counts, outcomes, lessons
 ```
 
+In existing-app mode the same files live in the app's repo under `docs/designs/<app-name>/`. There, `04`/`05` describe the code as built, `06` is a change spec (`06-change-spec.md`), and the reviews add `R-reconstruction-review.md` and `C-change-readiness-review.md`.
+
 ---
 
 ## Step 0 — Preflight and EGM setup
@@ -55,6 +65,7 @@ Do this before stage 1, so the reviewers are ready when the first checkpoint com
    - A new product idea → full run.
    - Existing builder files to review → set up EGM (steps 2–4), then use **Review-only mode** below.
    - The bundled example → first copy `builder/examples/trailhead/` into the user's working directory, and review the copy.
+   - An existing Strapi codebase to review or improve → set up EGM (steps 2–4), then follow `references/existing-app-mode.md`.
 2. **Check the reviewers** in your list of subagent types:
    - `egm:egm-zoom-out` is there → EGM is ready.
    - `strapi-product-egm:strapi-fact-checker` is there → this plugin's lenses are ready. If it's missing (the skill was installed without the plugin), the lenses run as general-purpose subagents (dispatch option 2 in `references/checkpoints.md`). Nothing to install.

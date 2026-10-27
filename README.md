@@ -22,6 +22,17 @@ The interview is Strapi's `strapi-product-builder`: business value first, then u
 
 Checkpoint C is the important one. The build spec promises that a fresh coding agent can build from it alone, and reviewer C is that fresh agent.
 
+### Existing apps
+
+It also works on a Strapi app that already exists — whether or not it was planned with this tool:
+
+| Step | What happens | Checked by |
+|---|---|---|
+| Reconstruct | Claude asks a few questions, then writes the design docs **as built**, from the code, citing a file for every claim | **R** — EGM's codebase-details reviewer checks the docs against the code |
+| Review | The design and the code are reviewed against the Strapi standards | **B** — EGM design critic and zoom-out, plus a Strapi code auditor (traps with file:line evidence) and the fact-checker |
+| Plan the change | You pick which findings to fix; Claude writes a change spec with files, data steps, callers, tests, and rollback | **C** — EGM implementation readiness and codebase-details, plus the fact-checker |
+| Implement | Only if you say go: on a new branch, one commit per milestone, never pushed | — |
+
 ## Install (Claude Code)
 
 ```bash
@@ -40,6 +51,7 @@ Then run `/reload-plugins` in an open session, or start a new one.
 
 - Start a plan: `/strapi-product-egm:strapi-product-egm`, or ask *"Plan my Strapi product with EGM reviews."*
 - Review files you already have: *"Run strapi-product-egm goldfish reviews on ./my-product"*. The skill runs the checkpoints that match the files present.
+- Review and improve an existing app: open a session in the app's repo and ask *"Use strapi-product-egm to review this Strapi app and plan fixes."* The docs and reviews go in `docs/designs/<app-name>/`. Nothing in the app changes unless you approve the change spec and say go.
 - Try it on the bundled example. From a clone of this repo, copy it out first, so the reviews don't write into the plugin:
 
   ```bash
@@ -69,12 +81,13 @@ Then run `/reload-plugins` in an open session, or start a new one.
 
 ```
 .claude-plugin/              plugin.json (depends on egm@egm) and marketplace.json
-agents/                      Claude Code adapters for the two Strapi lenses
+agents/                      Claude Code adapters for the three Strapi lenses
 skills/strapi-product-egm/
 ├── SKILL.md                 the EGM layer: setup, interview rules, checkpoints, resolve
 ├── standards/               what "good" means at each checkpoint (Strapi-specific)
-├── lenses/                  Strapi reviewer roles (skeptical customer, fact-checker)
-├── references/              EGM setup, checkpoint dispatch, resolve protocol
+├── lenses/                  Strapi reviewer roles (skeptical customer, fact-checker, code auditor)
+├── references/              EGM setup, checkpoint dispatch, resolve protocol, existing-app mode
+├── templates/               the change-spec template (existing-app mode)
 └── builder/                 strapi-product-builder, copied unchanged (see SOURCE.md)
 scripts/sync-builder.sh      re-copies the builder from a strapi/skills checkout
 docs/field-notes/            findings from real runs, and lessons for strapi-product-builder

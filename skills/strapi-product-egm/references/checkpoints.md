@@ -1,6 +1,6 @@
 # Running a goldfish checkpoint
 
-Read this before checkpoint A. The roster (who reviews what, against which standard) is the table in `SKILL.md`.
+Read this before the first checkpoint. The rosters (who reviews what, against which standard) are the table in `SKILL.md` for new products, and the tables in `existing-app-mode.md` for existing apps.
 
 ## 1. Before dispatch
 
@@ -23,8 +23,8 @@ Choose the option **per reviewer** — the first one that works for that reviewe
 
 **Persona paths for option 2:**
 
-- **This skill's lenses:** `lenses/skeptical-customer.md` and `lenses/strapi-fact-checker.md` in this skill's folder.
-- **EGM reviewers:** `<EGM root>/agents/` — `zoom_out.md`, `design_critic.md`, `comprehension.md`, `implementation_readiness.md`. In Claude Code, take `<EGM root>` from the `egm@egm` entry in `claude plugin list --json`. In Codex, use the installed plugin path from Codex's skill inventory or install metadata (see EGM's `docs/codex.md`). Never guess a path.
+- **This skill's lenses:** `lenses/skeptical-customer.md`, `lenses/strapi-fact-checker.md`, and `lenses/strapi-code-auditor.md` in this skill's folder.
+- **EGM reviewers:** `<EGM root>/agents/` — `zoom_out.md`, `design_critic.md`, `comprehension.md`, `implementation_readiness.md`, `codebase_details.md`. In Claude Code, take `<EGM root>` from the `egm@egm` entry in `claude plugin list --json`. In Codex, use the installed plugin path from Codex's skill inventory or install metadata (see EGM's `docs/codex.md`). Never guess a path.
 - EGM personas refer to their standards by relative path, which a general-purpose subagent can't resolve. So for `zoom_out.md`, also pass `Target Standard: <EGM root>/resources/document_standards/zoom-out-standard.md`.
 
 **Fallback role lines** (option 3 only):
@@ -33,6 +33,7 @@ Choose the option **per reviewer** — the first one that works for that reviewe
 - **design:** "You are a hostile design critic. Check the targets against the standard: flag every question it requires that the targets don't answer, every unbacked assumption, and every unmitigated risk."
 - **comprehension:** "You are a new team member with no background. Flag every term, system, or step that isn't defined in the document or linked."
 - **implementation-readiness:** "You are the engineer who must build this from the document alone. Flag every place where you would have to guess or make a design decision."
+- **codebase-details:** "You are a pedantic auditor. Check every statement in the document against the code it describes, and flag anything wrong, uncited, or missing."
 
 ## 3. Prompt templates
 
@@ -74,6 +75,17 @@ Lens file: <abs path to this skill's lenses/<name>.md>
 ```
 
 The registered agents already know to read their lens file; the path is there for options 2 and 3.
+
+**Code-aware variants (existing-app mode).** Replace the platform note with the mode note from `existing-app-mode.md`, and add the codebase:
+
+```text
+Codebase (read code as needed to check claims): <abs path to the Strapi app root>, <abs path to the frontend root>
+```
+
+- `egm-codebase-details` treats the codebase as its GoldfishContext.
+- `strapi-product-egm:strapi-code-auditor` gets the codebase as its **Targets**, plus `Target Standard:` and `Background: <abs path to 05>`.
+- `strapi-product-egm:strapi-fact-checker` also gets the `package.json` files as targets, so it can check the installed versions.
+- Never include `.env` files in any list.
 
 ## 4. Consolidate
 
