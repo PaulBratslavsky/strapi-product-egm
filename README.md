@@ -35,15 +35,20 @@ It also works on a Strapi app that already exists — whether or not it was plan
 
 ## Install (Claude Code)
 
+Two commands:
+
 ```bash
 claude plugin marketplace add google/elephant-goldfish-model
-claude plugin marketplace add PaulBratslavsky/strapi-product-egm
-claude plugin install strapi-product-egm@strapi-product-egm
+claude plugin install strapi-product-egm --marketplace PaulBratslavsky/strapi-product-egm
 ```
 
-Installing the plugin also installs Google's EGM plugin (`egm@egm`), which this plugin declares as a dependency. Add Google's marketplace first, as above. If you installed this plugin before adding it, add the marketplace and run `claude plugin install egm@egm`.
+The second command adds this repo's marketplace and installs the plugin, and Google's EGM plugin (`egm@egm`) comes with it as a dependency.
 
-Then run `/reload-plugins` in an open session, or start a new one.
+**Why the first command is needed:** Claude Code never adds a marketplace on another plugin's behalf, so you add Google's yourself, once. If you skip it, the plugin installs but won't load. Running the first command afterwards fixes that: it installs the missing EGM automatically.
+
+Then start a new session (or run `/reload-plugins` in an open one).
+
+**Update later:** `claude plugin marketplace update strapi-product-egm`, then `claude plugin update strapi-product-egm@strapi-product-egm`.
 
 **Recommended:** connect the Strapi docs MCP server in Claude Code under the name `strapi-docs`, so the fact-checker can query the official docs directly. Under any other name (for example a claude.ai connector), the fact-checker doesn't see it and falls back to fetching https://docs.strapi.io.
 
