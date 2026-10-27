@@ -129,7 +129,7 @@ Read `references/checkpoints.md` before the first checkpoint. It has the dispatc
 | Checkpoint | Review these | Background only | Reviewers (in parallel) | Standard | Report |
 |---|---|---|---|---|---|
 | **A** Concept | 01, 02, 03 | — | `egm:egm-zoom-out` (BRAINSTORM mode) · `egm:egm-design` · `egm:egm-comprehension` · `strapi-product-egm:skeptical-customer` | `standards/product-brief-standard.md` | `A-concept-review.md` |
-| **B** Design | 04, 05 | 03 | `egm:egm-zoom-out` · `egm:egm-design` · `strapi-product-egm:strapi-fact-checker` | `standards/strapi-design-standard.md` | `B-design-review.md` |
+| **B** Design | 04, 05 | 03 (+ the design standard, for zoom-out) | `egm:egm-zoom-out` · `egm:egm-design` · `strapi-product-egm:strapi-fact-checker` | `standards/strapi-design-standard.md` | `B-design-review.md` |
 | **C** Build readiness | 06 only | none | `egm:egm-implementation-readiness` · `egm:egm-comprehension` · `strapi-product-egm:strapi-fact-checker` | `standards/strapi-build-spec-standard.md` | `C-build-readiness-review.md` |
 
 When they start: A after the hypothesis gate. B as soon as the user approves 05 (after the sweep). C as soon as the user approves 06. For B and C, say in one line that the review is starting; the user can say "skip".
@@ -165,6 +165,8 @@ If the user already has builder files, skip the interview:
 4. Write the review log. The lessons are the main output of a review-only run.
 
 Files made by the builder without this skill lack the extra sections (Hypothesis, Operations). Expect the reviewers to flag that, and treat those findings as lessons for the builder.
+
+**Files nobody here owns** (the bundled example, a third party's plan): there's no owner to confirm the hypothesis or answer the resolve gate. Draft the hypothesis for the zoom-out reviewer only, mark it unconfirmed, and don't write it into 01. Label findings as usual, apply no edits unless the user asks, and put the effort into the review log.
 
 ## Hand-off (after C is resolved)
 

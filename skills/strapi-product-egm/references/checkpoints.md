@@ -53,7 +53,7 @@ or lines), and the finding with your recommendation.
 ```
 
 - Leave out `Target Standard` for `egm-zoom-out` (it applies its own zoom-out standard — except under dispatch option 2, see above) and for `egm-comprehension` (it needs none).
-- Leave out `Background` everywhere except checkpoint B.
+- Leave out `Background` everywhere except checkpoint B. At B, `egm-zoom-out` gets two background files: `03-requirements.md` and the copied `strapi-design-standard.md`. Without the standard, zoom-out argues against Strapi conventions it can't see, such as slug middleware for seeded data.
 
 **EGM zoom-out, brainstorm mode** (checkpoint A only):
 
