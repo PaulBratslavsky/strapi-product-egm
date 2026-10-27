@@ -1,0 +1,15 @@
+{
+  "name": "strapi-product-egm",
+  "owner": {
+    "name": "Paul Bratslavsky"
+  },
+  "description": "Strapi product planning with Google's Elephant-Goldfish Model (EGM) reviews.",
+  "allowCrossMarketplaceDependenciesOn": ["egm"],
+  "plugins": [
+    {
+      "name": "strapi-product-egm",
+      "source": "./",
+      "description": "Plan a Strapi product with Google's Elephant-Goldfish Model: a business-value-first interview plus fresh-context reviews of the brief, the design, and the build spec."
+    }
+  ]
+}

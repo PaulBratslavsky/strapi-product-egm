@@ -1,0 +1,14 @@
+{
+  "name": "strapi-product-egm",
+  "displayName": "Strapi Product Builder (EGM edition)",
+  "version": "0.1.0",
+  "description": "Plan a Strapi product with Google's Elephant-Goldfish Model: a business-value-first interview plus fresh-context reviews of the brief, the design, and the build spec.",
+  "author": {
+    "name": "Paul Bratslavsky",
+    "url": "https://github.com/PaulBratslavsky"
+  },
+  "homepage": "https://github.com/PaulBratslavsky/strapi-product-egm",
+  "repository": "https://github.com/PaulBratslavsky/strapi-product-egm",
+  "keywords": ["strapi", "product-planning", "spec-driven-development", "design-review", "egm"],
+  "dependencies": ["egm@egm"]
+}
