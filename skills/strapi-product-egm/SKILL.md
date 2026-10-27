@@ -1,6 +1,16 @@
 ---
 name: strapi-product-egm
-description: Plan a Strapi product with Google's Elephant-Goldfish Model (EGM) — a business-value-first planning interview (idea → users → requirements → tech → Strapi spec → build spec) plus fresh-context "goldfish" reviews that stress-test the product brief, the technical design, and the build spec before any code is written. Also reviews an EXISTING Strapi app: reconstructs its design from the code, checks it against Strapi standards, and turns the accepted findings into a reviewed change spec (and, on request, implements it on a branch). Sets up the EGM plugin if it is missing. Use when the user wants an EGM / elephant-goldfish / goldfish-reviewed product plan, asks to "stress-test" or get a "fresh-eyes review" of a Strapi product plan, build spec, or existing Strapi codebase, wants goldfish reviews of existing strapi-product-builder files (01-product.md … 06-build-spec.md), or wants to audit and improve a Strapi app with this method.
+description: >-
+  Plan a Strapi product with Google's Elephant-Goldfish Model (EGM) — a business-value-first
+  planning interview (idea → users → requirements → tech → Strapi spec → build spec) plus
+  fresh-context "goldfish" reviews that stress-test the product brief, the technical design, and
+  the build spec before any code is written. Also reviews an EXISTING Strapi app: reconstructs its
+  design from the code, checks it against Strapi standards, and turns the accepted findings into a
+  reviewed change spec (and, on request, implements it on a branch). Sets up the EGM plugin if it
+  is missing. Use when the user wants an EGM / elephant-goldfish / goldfish-reviewed product plan,
+  asks to "stress-test" or get a "fresh-eyes review" of a Strapi product plan, build spec, or
+  existing Strapi codebase, wants goldfish reviews of existing strapi-product-builder files
+  (01-product.md … 06-build-spec.md), or wants to audit and improve a Strapi app with this method.
 ---
 
 # Strapi Product Builder — EGM edition

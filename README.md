@@ -47,7 +47,14 @@ It installs for your user account, so it works in every project. To install it f
 
 Then start a new session (or run `/reload-plugins` in an open one).
 
-**Already installed EGM from Google's own marketplace?** You'll have two copies. That's harmless (each reviewer loads once), but you can remove the extra one with `claude plugin uninstall egm@egm`.
+**Already installed EGM from Google's own marketplace (`egm@egm`)?** Keep it — it works. If you'd rather have a single copy, install this repo's listing first, then remove Google's:
+
+```bash
+claude plugin install egm@strapi-product-egm
+claude plugin uninstall egm@egm
+```
+
+(In that order: updating this plugin doesn't add EGM by itself, so removing `egm@egm` first would leave you without EGM.)
 
 **Update later:** `claude plugin marketplace update strapi-product-egm`, then `claude plugin update strapi-product-egm@strapi-product-egm`.
 
@@ -81,7 +88,13 @@ Then start a new session (or run `/reload-plugins` in an open one).
 
 ## Other agents
 
-`npx skills add PaulBratslavsky/strapi-product-egm` installs the skill folder without the plugin's agents. The skill then sets up EGM where it can (Claude Code, Cowork, Codex) and falls back to general-purpose reviewers or a "paste it into a new chat" review elsewhere. See [`references/egm-setup.md`](skills/strapi-product-egm/references/egm-setup.md).
+For Cursor, Codex and other agents, use the [skills CLI](https://github.com/vercel-labs/skills):
+
+```bash
+npx skills add PaulBratslavsky/strapi-product-egm
+```
+
+This installs the skill folder without the plugin's agents. The skill then sets up EGM where it can (Claude Code, Cowork, Codex) and falls back to general-purpose reviewers or a "paste it into a new chat" review elsewhere. See [`references/egm-setup.md`](skills/strapi-product-egm/references/egm-setup.md).
 
 ## Repo layout
 

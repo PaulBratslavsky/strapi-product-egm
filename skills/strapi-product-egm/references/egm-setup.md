@@ -18,7 +18,7 @@ EGM is Google's [Elephant-Goldfish Model](https://github.com/google/elephant-gol
 | Just this user | `claude plugin install egm --marketplace PaulBratslavsky/strapi-product-egm` |
 | Everyone on the project (recorded in `.claude/settings.json`) | The same, with `--scope project` |
 
-Two copies of EGM (one from each marketplace) are harmless — each reviewer loads once — but `claude plugin uninstall egm@egm` removes the extra one.
+Two copies of EGM (one from each marketplace) are harmless — each reviewer loads once. To keep one, install `egm@strapi-product-egm` first, then `claude plugin uninstall egm@egm`; in the other order the user is left with no EGM.
 
 **Load it:** ask the user to type `/reload-plugins` (or `/reload-plugins --force` if it warns). Plugin agents load on reload or on the next session start.
 
