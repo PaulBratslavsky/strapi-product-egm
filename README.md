@@ -35,18 +35,19 @@ It also works on a Strapi app that already exists — whether or not it was plan
 
 ## Install (Claude Code)
 
-Two commands:
+One command:
 
 ```bash
-claude plugin marketplace add google/elephant-goldfish-model
 claude plugin install strapi-product-egm --marketplace PaulBratslavsky/strapi-product-egm
 ```
 
-The second command adds this repo's marketplace and installs the plugin, and Google's EGM plugin (`egm@egm`) comes with it as a dependency.
+That installs this plugin and Google's EGM plugin with it. This repo's `.claude-plugin/marketplace.json` lists EGM as a pointer to Google's repo, so EGM is downloaded straight from `google/elephant-goldfish-model`; nothing of Google's is copied here.
 
-**Why the first command is needed:** Claude Code never adds a marketplace on another plugin's behalf, so you add Google's yourself, once. If you skip it, the plugin installs but won't load. Running the first command afterwards fixes that: it installs the missing EGM automatically.
+It installs for your user account, so it works in every project. To install it for one project only (recorded in that project's `.claude/settings.json`, so teammates get it too), add `--scope project`.
 
 Then start a new session (or run `/reload-plugins` in an open one).
+
+**Already installed EGM from Google's own marketplace?** You'll have two copies. That's harmless (each reviewer loads once), but you can remove the extra one with `claude plugin uninstall egm@egm`.
 
 **Update later:** `claude plugin marketplace update strapi-product-egm`, then `claude plugin update strapi-product-egm@strapi-product-egm`.
 

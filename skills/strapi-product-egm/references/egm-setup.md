@@ -4,25 +4,27 @@ EGM is Google's [Elephant-Goldfish Model](https://github.com/google/elephant-gol
 
 ## Claude Code (reference harness)
 
-**Installed as this repo's plugin?** Then EGM comes with it: the plugin declares `egm@egm` as a dependency, and `claude plugin install` installs it at the same scope. Google's marketplace must be added first — see the repo README.
+**Installed as this repo's plugin?** Then EGM comes with it: the plugin declares `egm` as a dependency, this repo's marketplace lists EGM as a pointer to Google's repo, and `claude plugin install` downloads it from `google/elephant-goldfish-model` at the same scope.
 
 **Check:**
 
 - Your subagent types include `egm:egm-zoom-out`, `egm:egm-design`, `egm:egm-comprehension`, `egm:egm-implementation-readiness` → ready.
-- Or run `claude plugin list --json` and look for `egm@egm`.
+- Or run `claude plugin list --json` and look for an `egm@…` entry (`egm@strapi-product-egm`, or `egm@egm` if it was installed from Google's own marketplace).
 
 **Install** (ask the user first — it changes their Claude Code settings):
 
-| For | Commands |
+| For | Command |
 |---|---|
-| Just this user | `claude plugin marketplace add google/elephant-goldfish-model` then `claude plugin install egm@egm` |
-| Everyone on the project (recorded in `.claude/settings.json`) | The same two commands, each with `--scope project` |
+| Just this user | `claude plugin install egm --marketplace PaulBratslavsky/strapi-product-egm` |
+| Everyone on the project (recorded in `.claude/settings.json`) | The same, with `--scope project` |
+
+Two copies of EGM (one from each marketplace) are harmless — each reviewer loads once — but `claude plugin uninstall egm@egm` removes the extra one.
 
 **Load it:** ask the user to type `/reload-plugins` (or `/reload-plugins --force` if it warns). Plugin agents load on reload or on the next session start.
 
 **Permissions:** reviewers read files outside the user's project — EGM's reviewers read their persona and standard files from EGM's install folder, and this plugin's lens agents read `lenses/*.md` from this plugin's install folder. In an interactive session, approve those read prompts. For headless runs, the user adds read rules for both folders (paths from `claude plugin list --json`): EGM's `agents/`, `resources/`, `docs/`, `skills/`, and this plugin's `skills/`. The fact-checker also asks to use the `strapi-docs` MCP server and to fetch web pages. Never turn permission checks off.
 
-**Update:** `claude plugin update egm@egm`, then reload. **Remove:** `claude plugin uninstall egm@egm`.
+**Update:** `claude plugin update egm@strapi-product-egm`, then reload. **Remove:** `claude plugin uninstall egm@strapi-product-egm`.
 
 ## Claude Cowork
 

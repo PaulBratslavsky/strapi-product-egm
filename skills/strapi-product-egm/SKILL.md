@@ -71,16 +71,17 @@ Do this before stage 1, so the reviewers are ready when the first checkpoint com
    - `strapi-product-egm:strapi-fact-checker` is there → this plugin's lenses are ready. If it's missing (the skill was installed without the plugin), the lenses run as general-purpose subagents (dispatch option 2 in `references/checkpoints.md`). Nothing to install.
 
    If EGM is ready, go to step 5.
-3. **EGM missing.** Run `claude plugin list --json` and look for `egm@egm`.
+3. **EGM missing.** Run `claude plugin list --json` and look for an `egm@…` entry.
    - Listed, but there are no `egm:` agent types → the plugin hasn't loaded in this session. Ask the user to type `/reload-plugins`, and continue when they say it's done.
    - Not listed → ask first. Say in two sentences what EGM is (Google's open-source spec-review method: fresh reviewer agents with no chat history check your documents) and that you'll install its plugin from `github.com/google/elephant-goldfish-model`. Ask one question: install it **just for you** (user scope) or **for everyone on this project** (project scope, recorded in `.claude/settings.json`)? Never install without a yes.
 4. **Install** (Claude Code):
 
    ```bash
-   claude plugin marketplace add google/elephant-goldfish-model   # add --scope project for the team option
-   claude plugin install egm@egm                                  # add --scope project for the team option
-   claude plugin list --json                                      # confirm egm@egm and note its version
+   claude plugin install egm --marketplace PaulBratslavsky/strapi-product-egm   # add --scope project for the team option
+   claude plugin list --json                                                   # confirm egm and note its version
    ```
+
+   This repo's marketplace lists EGM as a pointer to Google's repo, so EGM is downloaded from `google/elephant-goldfish-model`.
 
    Then ask the user to type `/reload-plugins` (add `--force` if it warns) so the new agents load into this session, and continue when they say it's done. If the `egm:` agent types still don't appear, use dispatch option 2 for those reviewers.
    Other harnesses (Cowork, Codex, Cursor, claude.ai): follow `references/egm-setup.md`.
