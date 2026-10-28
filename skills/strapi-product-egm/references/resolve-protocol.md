@@ -56,8 +56,7 @@ The user can also answer in their own words. Then stop and wait for them.
 
 - **EGM:** v<version> · **Reviewers:** <list> · **Dispatch option:** <1–4> · **Re-run:** yes/no
 - **Findings:** 🔴 <n> · 🟡 <n> · 🟢 <n> → fixed <n> · contested <n> · escalated <n> · declined <n>
-- **Lessons for strapi-product-builder** (from accepted Blockers and Majors only):
-  - <the interview question, template section, standard line, or cookbook entry that would have prevented it>
+- **Lessons:** <IDs, e.g. L3, L4>. Write each one in the log's `## Lessons` section, in the format from `learning-loop.md`: the interview question, template section, standard line, or cookbook entry that would have prevented an accepted Blocker or Major.
 - **Reviewer quality:** <findings that were wrong or noise, and which lens produced them>
 ```
 

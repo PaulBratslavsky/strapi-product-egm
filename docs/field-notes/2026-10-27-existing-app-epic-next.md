@@ -1,5 +1,7 @@
 # Field note: existing-app mode on epic-next-course (2026-10-27)
 
+> **Update:** the change spec was later implemented (E8). See `2026-10-27-epic-next-implementation.md`.
+
 First full test of existing-app mode on a copy of the Epic Next.js + Strapi 5 course app (Strapi 5.21.0, Next.js 15.4.6; about 5,500 lines). The runner acted as owner. Stopped before implementation (E8). The full docs, reports and the change spec stayed in the run folder.
 
 **Run:** 2026-10-27 · strapi-product-egm 0.2.x · EGM v0.1.0 · copy of `epic-next-course` @ `89ed75e`. The runner acted as owner (goal G1 set by the runner, marked unconfirmed). Nothing was implemented.

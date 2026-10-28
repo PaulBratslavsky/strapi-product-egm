@@ -15,7 +15,7 @@ description: >-
 
 # Strapi Product Builder — EGM edition
 
-> **Experimental.** This skill tests Google's [Elephant-Goldfish Model](https://github.com/google/elephant-goldfish-model) (EGM) on top of Strapi's `strapi-product-builder` interview. Every run records what the reviews caught in `reviews/review-log.md`, so the lessons can be folded back into the builder.
+> **Experimental.** This skill tests Google's [Elephant-Goldfish Model](https://github.com/google/elephant-goldfish-model) (EGM) on top of Strapi's `strapi-product-builder` interview. Every run records what the reviews caught in `reviews/review-log.md`. The lessons are folded back into this skill, and, through a pull request upstream, into the builder (`references/learning-loop.md`).
 
 ## The model
 
@@ -45,10 +45,16 @@ Where this file and `BUILDER.md` conflict, this file wins.
 | Mode | When | Follow |
 |---|---|---|
 | **New product** (default) | The user has an idea and no code | This file, from Step 0 |
-| **Review-only** | The user has planning files (01–06) to check | Step 0, then "Review-only mode" below |
-| **Existing app** | The user has a Strapi codebase to review and improve | Step 0 (steps 1–4), then `references/existing-app-mode.md` |
+| **Review-only** | The user has planning files (01–06) to check | Step 0 (steps 1–5), then "Review-only mode" below |
+| **Existing app** | The user has a Strapi codebase to review and improve | Step 0 (steps 1–5), then `references/existing-app-mode.md` |
+| **Improve this skill** | The user wants lessons from earlier runs folded into this skill | Step 0 (steps 1–4), then `references/learning-loop.md`, section 3 |
 
-**This skill's folder** is `${CLAUDE_SKILL_DIR}` in Claude Code (elsewhere: the folder that contains this file). Reviewers need absolute paths, so resolve every path you hand them against it. Never write review files or edits inside this folder.
+**In every mode:**
+
+- The Elephant rules in Step 1 apply, including **Check before you claim**. The interview rules apply only where there's an interview.
+- Capture lessons as you go, and apply a project's earlier lessons at the start of a run (`references/learning-loop.md`, sections 1–2).
+
+**This skill's folder** is `${CLAUDE_SKILL_DIR}` in Claude Code (elsewhere: the folder that contains this file). Reviewers need absolute paths, so resolve every path you hand them against it. Never write review files or edits inside this folder. Improve mode edits a separate clone of the skill's source repo, on a branch, never the installed copy.
 
 ## Files this skill writes
 
@@ -60,10 +66,10 @@ Where this file and `BUILDER.md` conflict, this file wins.
     ├── A-concept-review.md
     ├── B-design-review.md
     ├── C-build-readiness-review.md
-    └── review-log.md                  # one entry per checkpoint: counts, outcomes, lessons
+    └── review-log.md                  # one entry per checkpoint, then a "## Lessons" section, always last
 ```
 
-In existing-app mode the same files live in the app's repo under `docs/designs/<app-name>/`. There, `04`/`05` describe the code as built, `06` is a change spec (`06-change-spec.md`), and the reviews add `R-reconstruction-review.md` and `C-change-readiness-review.md`.
+In existing-app mode the same files live in the app's repo under `docs/designs/<app-name>/`. There, `04`/`05` describe the code as built, `06` is a change spec (`06-change-spec.md`), and the reviews add `R-reconstruction-review.md`, `C-change-readiness-review.md` and, after implementation, `E8-implementation-log.md`. Either folder is a **run folder**.
 
 ---
 
@@ -73,9 +79,10 @@ Do this before stage 1, so the reviewers are ready when the first checkpoint com
 
 1. **Find out what the user wants.**
    - A new product idea → full run.
-   - Existing builder files to review → set up EGM (steps 2–4), then use **Review-only mode** below.
+   - Existing builder files to review → set up EGM (steps 2–5), then use **Review-only mode** below.
    - The bundled example → first copy `builder/examples/trailhead/` into the user's working directory, and review the copy.
-   - An existing Strapi codebase to review or improve → set up EGM (steps 2–4), then follow `references/existing-app-mode.md`.
+   - An existing Strapi codebase to review or improve → set up EGM (steps 2–5), then follow `references/existing-app-mode.md`.
+   - Fold lessons from earlier runs into this skill → set up EGM (steps 2–4), then follow `references/learning-loop.md`, section 3.
 2. **Check the reviewers** in your list of subagent types:
    - `egm:egm-zoom-out` is there → EGM is ready.
    - `strapi-product-egm:strapi-fact-checker` is there → this plugin's lenses are ready. If it's missing (the skill was installed without the plugin), the lenses run as general-purpose subagents (dispatch option 2 in `references/checkpoints.md`). Nothing to install.
@@ -95,7 +102,8 @@ Do this before stage 1, so the reviewers are ready when the first checkpoint com
 
    Then ask the user to type `/reload-plugins` (add `--force` if it warns) so the new agents load into this session, and continue when they say it's done. If the `egm:` agent types still don't appear, use dispatch option 2 for those reviewers.
    Other harnesses (Cowork, Codex, Cursor, claude.ai): follow `references/egm-setup.md`.
-5. **Ready.** Note the EGM version (from `claude plugin list --json`) for the review log. Then start the builder's flow: ask for the product name and pick the output mode as `BUILDER.md` describes.
+5. **Ready (all modes).** Note the EGM version (from `claude plugin list --json`) for the review log. If the working folder has earlier run folders, apply their open lessons (`references/learning-loop.md`, section 2). In existing-app mode, do this in E1, once you've found the app's repo.
+6. **New product only:** start the builder's flow. Ask for the product name, and pick the output mode as `BUILDER.md` describes.
 
 ---
 
@@ -107,6 +115,12 @@ Apply these on top of the builder's "Tone & pacing" section. They replace it whe
 - **One open question per turn in stages 1–3.** Ask open-ended questions and don't suggest candidate answers while discovering the problem; the user's own words expose their assumptions. (Ask the builder's product-category question the same way.) Offering options is fine for real decisions in stage 4.
 - **The owner decides forks.** Where the builder has a default (Strapi v5, PostgreSQL, Strapi Cloud, Users & Permissions, `src/api/<name>` modules), state it. Where it has none (the frontend, a tenancy model), lay out the options — how each works, its trade-offs, and when it fails — and let the user choose. Use the builder's own option lists where it has them, such as its four first-class frontends.
 - **A contradiction stops edits.** If a new answer contradicts an earlier decision, don't edit any file in that turn. Name both statements and ask which one wins.
+- **Check before you claim.** This covers claims that something is unsupported, required, broken, or can't run, and actions that are costly to undo: switching a runtime, skipping a step, calling a feature broken. A version range in `engines`, a README line or a config default records what someone *declared*, not what works.
+  - Before you make such a claim or take such an action, try it, or read the installed source, and report what you saw.
+  - Before E8 in existing-app mode, "check" means read-only checks: read the code or the installed packages. Don't install or boot anything.
+  - If you can't check (there's no code yet, or the action isn't allowed yet), write "not verified" and why.
+  - Official docs stay a valid source for design statements. Cite them, and the fact-checker verifies them.
+  - Never present an inference as a fact, to the user or in a document.
 - **Write to the standard.** Before drafting stages 1–3, 4–5, and 6, read the matching file in `standards/`. The reviewers grade against it. Knowing the rubric isn't cheating: a goldfish is useful because it has no memory, not because the rules are secret.
 - **Files, not chat.** Never paste a stage file into chat. After writing one, give its path and the 2–3 decisions that matter, then ask the builder's "Does this look right?" question.
 
@@ -181,7 +195,7 @@ The builder's **robustness sweep** after stage 5 stays a conversation with the u
 
 If the user already has builder files, skip the interview:
 
-1. Do Step 0, steps 1–4. Work on files in the user's working directory, never inside this skill's folder.
+1. Do Step 0, steps 1–5. Work on files in the user's working directory, never inside this skill's folder.
 2. Run the checkpoints that match the files present — A if 01–03 exist, B if 04–05 exist, C if 06 exists — in that order. Before A, if 01 has no Hypothesis section, draft one from 01–03 and have the user confirm it.
 3. Resolve each one. Ask before editing files that weren't written in this session.
 4. Write the review log. The lessons are the main output of a review-only run.
@@ -195,7 +209,7 @@ Files made by the builder without this skill lack the extra sections (Hypothesis
 - `06-build-spec.md` is the build spec, exactly as in the builder.
 - Suggest committing the product folder into the build repo under `docs/designs/<product-name>/` (EGM's convention). After the build, the user can run `/egm:egm-drift-report docs/designs/<product-name>` to compare the spec with the code — for example content types against `apps/cms/src/api/*/content-types/*/schema.json` in the builder's default layout, plus routes and policies.
 - For a deeper, generic pass the user can run `/egm:egm-review docs/designs/<product-name>/06-build-spec.md`. (EGM's own skills can only be started by the user, not by this skill.)
-- Point the user to `reviews/review-log.md` and its "Lessons for strapi-product-builder".
+- Point the user to the Lessons section of `reviews/review-log.md`. To fold them into this skill, they can ask *"update strapi-product-egm with these lessons"* (`references/learning-loop.md`, section 3).
 
 ## Attribution
 

@@ -83,8 +83,23 @@ claude plugin uninstall egm@egm
     ├── A-concept-review.md
     ├── B-design-review.md
     ├── C-build-readiness-review.md
-    └── review-log.md                  # what each checkpoint caught, and lessons for the builder
+    └── review-log.md                  # what each checkpoint caught, and numbered lessons (L1, L2, …)
 ```
+
+## It learns from its runs
+
+Every run ends by writing **lessons**: rules the skill should have told it, each with the evidence that proved it (a reviewer finding, a failed check, a wrong claim). They go in the run's `review-log.md`.
+
+- **Same project:** the next run reads those lessons at the start and applies them straight away.
+- **Everyone:** ask *"update strapi-product-egm with these lessons"*. Claude works on a clone of this repo, never the installed copy, and does four things:
+  1. sorts the lessons into apply, merge, hold, upstream (builder) or reject;
+  2. edits the standards and references;
+  3. has a fresh reviewer check that the new rules are clear and don't conflict;
+  4. asks you before it pushes.
+
+  Then `claude plugin update` brings the new version to every machine.
+
+Details: [`references/learning-loop.md`](skills/strapi-product-egm/references/learning-loop.md). Example: [`docs/field-notes/2026-10-27-epic-next-implementation.md`](docs/field-notes/2026-10-27-epic-next-implementation.md).
 
 ## Other agents
 
@@ -99,23 +114,24 @@ This installs the skill folder without the plugin's agents. The skill then sets 
 ## Repo layout
 
 ```
-.claude-plugin/              plugin.json (depends on egm@egm) and marketplace.json
+.claude-plugin/              plugin.json (depends on egm) and marketplace.json
 agents/                      Claude Code adapters for the three Strapi lenses
 skills/strapi-product-egm/
 ├── SKILL.md                 the EGM layer: setup, interview rules, checkpoints, resolve
 ├── standards/               what "good" means at each checkpoint (Strapi-specific)
 ├── lenses/                  Strapi reviewer roles (skeptical customer, fact-checker, code auditor)
-├── references/              EGM setup, checkpoint dispatch, resolve protocol, existing-app mode
+├── references/              EGM setup, checkpoint dispatch, resolve protocol, existing-app mode, learning loop
 ├── templates/               the change-spec template (existing-app mode)
 └── builder/                 strapi-product-builder, copied unchanged (see SOURCE.md)
 scripts/sync-builder.sh      re-copies the builder from a strapi/skills checkout
-docs/field-notes/            findings from real runs, and lessons for strapi-product-builder
+docs/field-notes/            findings and lessons from real runs
 ```
 
 ## Keeping it current
 
 - **Builder:** `scripts/sync-builder.sh /path/to/strapi-skills-checkout` copies the latest `strapi-product-builder` and records the commit in `builder/SOURCE.md`.
-- **EGM:** `claude plugin update egm@egm`. EGM is pre-1.0, so agent names may change; this plugin was written against EGM v0.1.0.
+- **Lessons:** see "It learns from its runs" above.
+- **EGM:** `claude plugin update egm@strapi-product-egm`. EGM is pre-1.0, so agent names may change; this plugin was written against EGM v0.1.0.
 
 ## Credits
 

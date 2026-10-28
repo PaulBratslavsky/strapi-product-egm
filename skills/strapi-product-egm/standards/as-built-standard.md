@@ -39,4 +39,4 @@ The documents describe what the code does. Evaluations ("insecure", "should be")
 
 ## 6. Versions
 
-The Strapi version, the Node engine, and key package versions match `package.json` and the lockfile.
+The Strapi version, the Node engine, and key package versions match `package.json` and the lockfile. The Node engine is written as *declared* ("`engines`: ≤ 22"), never as tested support, unless someone actually ran it.

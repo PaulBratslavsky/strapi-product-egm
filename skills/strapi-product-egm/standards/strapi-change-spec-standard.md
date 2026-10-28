@@ -50,12 +50,21 @@ Each milestone says how to verify it: HTTP requests with the expected status, a 
 
 - **Security checks don't trust client-declared metadata.** An upload check uses the file extension **and** the file's bytes, not the multipart `Content-Type` alone; anything else is a Blocker (a file declared `image/png` can be HTML served from the Strapi origin).
 - **Verification is safe to run.** No step deletes local data (use a scratch database, e.g. `DATABASE_FILENAME=.tmp/scratch.db`, or back up first), and every expected result can actually happen in the state the step sets up.
+- **An agent can run every check.** A check set-up step that needs clicking in the admin panel (create an admin, tick a permission, set a field) also gets a scripted version: an API call, a CLI command, or a query against the scratch database. Otherwise it's a Major. This is for check set-up only: permissions the app needs are seeded in `bootstrap()` (§5).
+- **Checks parse structured output.** Check JSON with `jq`, or with `node -e` if `jq` isn't installed, not `grep` on formatted text. A pattern like `"maxDuration":[0-9]*` misses `"maxDuration": 150`.
+- **No production keys needed.** A path that calls a paid or third-party API is testable without real keys, and the spec says how:
+  - the no-key command, with its expected status (the failure path);
+  - for the success path and any race, the SDK's base-URL variable and the minimal response the local mock returns;
+  - if the client has no base-URL setting, the stub to use.
+
+  A check that only passes with a real key is a Major.
 
 ## 8. Header
 
 - The **deviation protocol**: if the code makes a step wrong or impossible, stop and ask; don't improvise.
 - **Docs lookup:** the `strapi-docs` MCP or https://docs.strapi.io, plus the frontend framework's docs.
 - **Safety:** work on a branch, don't push, never use production data or credentials.
+- **Environment:** the spec is written before anything runs, so runtime versions are "to be confirmed in the E8 baseline". E8 records the versions it used in `E8-implementation-log.md`. A claim that a version is required or unsupported cites a failure someone saw, or is marked "not verified". Neither the `engines` field nor a package manager refusing because of it counts as that failure.
 
 ## 9. Deployment
 

@@ -33,6 +33,8 @@ List the version-sensitive claims in the targets, then verify them. Prioritise w
 
 Check at most about 25 claims.
 
+A version range in `engines`, a README, or a lockfile says what the project *declares*. It doesn't prove that a version works or fails. Check compatibility claims against the framework's own support docs, or mark them Unverifiable.
+
 ## Verdicts
 
 - **Wrong** — the docs say otherwise. Blocker if a build step would fail or be insecure; Major otherwise.

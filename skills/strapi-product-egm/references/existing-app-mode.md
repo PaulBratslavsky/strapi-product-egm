@@ -23,13 +23,14 @@ Use this when the user has a Strapi app that wasn't planned with this skill — 
 - **Read-only until E8.** Before E8, the only files you write are the planning docs and reviews.
 - **Never read `.env` values.** Use `.env.example` and code for variable *names*. Never copy a secret into a doc or a prompt.
 - **E8 runs on a new git branch**, never pushes, and never touches production data or credentials. Migrations run against a local or dev database only.
+- **Before you boot anything in E8, ask the user once** whether the local `.env` points at any production service: database, payments, email, storage, or a paid API. You can't read it, so you need their answer. If it does, or they don't know, override every such variable on the command line (see "Running the checks"), or stop.
 
 ---
 
 ## E1 — Find the app and interview the owner
 
 1. **Find the code.** The Strapi app is the folder whose `package.json` depends on `@strapi/strapi` (usually `.`, `backend/`, `server/`, `apps/cms/`, or `strapi/`). Frontends depend on `next`, `astro`, `nuxt`, `@tanstack/react-start`, and so on. Note the Strapi version from `package.json` and the lockfile, and the current commit (`git rev-parse --short HEAD`).
-2. **Read what's there:** README files, `CLAUDE.md` / `AGENTS.md`, existing docs.
+2. **Read what's there:** README files, `CLAUDE.md` / `AGENTS.md`, existing docs. If the repo has earlier run folders (`docs/designs/*/reviews/review-log.md`), apply their open lessons (`learning-loop.md`, section 2).
 3. **Interview** — one question per turn, as in Step 1. Draft each answer from the README and code first, and ask the user to correct it:
    - What the app does and for whom (confirm your one-liner).
    - Who uses it, and the action they repeat (the core loop).
@@ -46,7 +47,11 @@ Write `04-tech-decisions.md` and `05-tech-requirements.md` with the builder's te
 
 - **Header:** `> As built — reconstructed from <repo> @ <commit>, <date>. Describes the code, not intentions.`
 - **Every claim cites a file** — for example `backend/src/api/summary/routes/summary.ts`. If you can't cite it, don't write it.
-- **Things the code can't tell you** — permissions clicked in the admin panel, data in the database, hosting settings — are written as `⚠️ not in code — <what to confirm>`. Collect them and ask the user in one message at the end of E2.
+- **A citation shows what a file says, not what works.** `"engines": "<=22"` in `package.json` is cited as "declared in `package.json`, not verified", never as "requires Node ≤ 22".
+- **Markers** (use these three, and no others):
+  - `⚠️ not in code — <what to confirm>`: something the code can't tell you, such as permissions clicked in the admin panel, data in the database, or hosting settings. Collect these and ask the user in one message at the end of E2.
+  - `⚠️ framework behavior — <claim>`: the claim depends on how the installed framework behaves, for example "stock `PUT /api/users/:id` has no owner check". The fact-checker verifies these at B against the installed source.
+  - `not verified — <why>`: a claim nobody has tried, such as runtime support.
 - **In 04, "Considered" is usually unknown.** Write "unknown (pre-existing)". Fill in "Why" only if the README or commit history says.
 - **No judgments.** "The `find` route has no owner filter" is a description. "This is insecure" is a finding — leave it for the reviewers.
 - **Include the Operations (robustness sweep) section,** with each line saying what the code does, or "not handled".
@@ -138,12 +143,43 @@ If they say go:
 
 1. Check the working tree is clean. If not, stop and ask.
 2. Create a branch: `egm/<short-change-name>`.
-3. Work milestone by milestone, following `06` exactly. If something in the code makes a step wrong or impossible, stop and ask — that is the deviation protocol, and it applies to you too.
-4. Run each milestone's verification. Commit once per milestone, with the milestone title as the message.
-5. Never push. Never point anything at production data or credentials.
+3. **Baseline: run the app before you change it.** Install, boot and build the Strapi app (and the frontend, if there is one) the way the README says. Then try the core loop once, and write down what already fails. Without a baseline you can't tell your bugs from old ones.
+   - **Every rule in "Running the checks" applies to the baseline too.** Above all, use a scratch database, and use no production services.
+   - **Use the runtime the user already has.** `engines` in `package.json` is a declaration, not a test, so try the current Node version first. A package manager that refuses because of `engines` is not evidence: retry with `--ignore-engines` (yarn 1) or `engine-strict=false` (npm). Finish the fresh-clone setup (next bullet) first. Switch versions only when an error points at the runtime itself, such as a native module that won't build or an unsupported API. Record that error, and record the version you used in `E8-implementation-log.md`.
+   - **Fresh clones miss generated files.** Strapi writes `types/generated/` on the first `strapi develop`, and `public/uploads/` may be missing (create it). `strapi build` can fail on types until `develop` has run once. These are setup steps, not app bugs.
+   - **Fill the scratch database** the way the repo does: import its seed archive (`strapi import -f <archive> --force`, against the scratch database), create users through the API, and create an admin with `strapi admin:create-user` if a check needs one.
+   - **Try the external calls the core loop depends on, safely.** Try only calls that read data, or that use a sandbox or test key (a public transcript API, a payment provider's test mode). Never trigger a real charge, and never send email to a real address. For anything else, write "not verified" and use a mock (see below).
+     - If a call is already broken, report it as a pre-existing problem and don't fix it in this change.
+     - If a milestone's checks depend on that call, stub it only to reach the check. If the milestone itself can't work without it, stop and ask.
+4. Work milestone by milestone, following `06` exactly. If something in the code makes a step wrong or impossible, stop and ask — that is the deviation protocol, and it applies to you too.
+5. Run each milestone's verification (see "Running the checks"). Commit once per milestone, with the milestone title as the message.
+6. Never push. Never point anything at production data or credentials.
+7. Write `reviews/E8-implementation-log.md`. Include:
+   - the runtime versions you used;
+   - the commits;
+   - each check and its result;
+   - what was tested against a mock or a stub;
+   - pre-existing problems you found;
+   - spec steps that were wrong.
+
+   Then capture lessons, once, in the review log (`references/learning-loop.md`, section 1).
+
+### Running the checks
+
+- **Use a scratch database**, never the user's data. Set every database variable on the command line, because `.env` may point somewhere else. For SQLite: `DATABASE_CLIENT=sqlite DATABASE_FILENAME=.tmp/<name>.db`. For Postgres: a throwaway database on localhost, with all `DATABASE_*` variables set explicitly.
+- **No production services.** Override, or leave unset, every variable for a paid or outward-facing service: payments, email, storage, AI keys. Use a mock or a test key instead.
+- **Restart Strapi after backend edits.** Auto-reload didn't pick up new files in Strapi 5.21. Confirm that the new code is live, for example that a new route no longer returns 404 or 405.
+- **Admin-panel steps can run headlessly, for check set-up only.** Set a field through the API or the scratch database, or simulate "ticking" a permission by inserting its row, and say which steps you replaced. Permissions the app itself needs are seeded in `bootstrap()` (change-spec standard §5), never by a database insert.
+- **Third-party APIs without test keys:**
+  - Test the failure path with no key.
+  - For the success path, point the SDK at a small local mock through its base-URL setting, with a fake key (for example `OPENAI_BASE_URL` for the AI SDK's OpenAI provider).
+  - A client with no base-URL setting gets a temporary stub instead (next bullet).
+  - Never use the user's production keys.
+- **Temporary stubs in app code**, only to reach a check (for example, a canned transcript while the real API is down). Revert them before you commit, confirm that `git diff` shows no change to that file, and report the stub.
+- **Report what each check proved, and what it didn't**, for example "success path tested against a local mock, not real OpenAI". Don't round "not tested" up to "works".
 
 ## E9 — Close the loop
 
 - Update `04`/`05` to the new as-built state, with fresh citations and the new commit.
-- Append to `reviews/review-log.md`: what was found, what was fixed, what was deferred.
+- Add an entry to `reviews/review-log.md`, above its `## Lessons` section: what was found, what was fixed, and what was deferred. Cite the IDs of the lessons captured in E8; don't capture them again.
 - Suggest that the user run `/egm:egm-drift-report docs/designs/<app-name>` now and then, to catch drift as the code moves on.
