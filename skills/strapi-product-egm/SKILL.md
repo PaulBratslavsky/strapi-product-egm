@@ -90,15 +90,25 @@ Do this before stage 1, so the reviewers are ready when the first checkpoint com
    If EGM is ready, go to step 5.
 3. **EGM missing.** Run `claude plugin list --json` and look for an `egm@…` entry.
    - Listed, but there are no `egm:` agent types → the plugin hasn't loaded in this session. Ask the user to type `/reload-plugins`, and continue when they say it's done.
-   - Not listed → ask first. Say in two sentences what EGM is (Google's open-source spec-review method: fresh reviewer agents with no chat history check your documents) and that you'll install its plugin from `github.com/google/elephant-goldfish-model`. Ask one question: install it **just for you** (user scope) or **for everyone on this project** (project scope, recorded in `.claude/settings.json`)? Never install without a yes.
-4. **Install** (Claude Code):
+   - Not listed → ask first. Say in two sentences what EGM is (Google's open-source spec-review method: fresh reviewer agents with no chat history check your documents) and that you'll install its plugin from `github.com/google/elephant-goldfish-model`. Ask one question: install it **just for you** (user scope) or **for everyone on this project** (project scope, recorded in `<repo root>/.claude/settings.json`)? Write out the full repo-root path (`git rev-parse --show-toplevel`), so the user can spot a temporary or hand-off folder. Never install without a yes.
+4. **Install** (Claude Code). Run only the block for the scope the user chose.
+
+   Just for you:
 
    ```bash
-   claude plugin install egm --marketplace PaulBratslavsky/strapi-product-egm   # add --scope project for the team option
-   claude plugin list --json                                                   # confirm egm and note its version
+   claude plugin install egm --marketplace PaulBratslavsky/strapi-product-egm
    ```
 
-   This repo's marketplace lists EGM as a pointer to Google's repo, so EGM is downloaded from `google/elephant-goldfish-model`.
+   For everyone on the project: both lines, from the repo root you named in step 3:
+
+   ```bash
+   claude plugin marketplace add PaulBratslavsky/strapi-product-egm --scope project
+   claude plugin install egm@strapi-product-egm --scope project
+   ```
+
+   Then run `claude plugin list --json` to confirm egm and note its version. This repo's marketplace lists EGM as a pointer to Google's repo, so EGM is downloaded from `google/elephant-goldfish-model`.
+   - **The team option needs both lines.** With `--marketplace … --scope project`, the plugin source goes into the user's own settings, not the project's, so teammates' copies can't download it (seen on Claude Code 2.1.312).
+   - **If a command is blocked** (auto mode may not let you add a new plugin source), don't retry it, and don't run it another way, including as a test in a temporary config. Give the user the blocked command and every one after it, to run in their own terminal (in the desktop app, the Terminal panel) from the repo root. Continue when they say it's done. If they'd rather not, continue without EGM: dispatch option 3 in `references/checkpoints.md`.
 
    Then ask the user to type `/reload-plugins` (add `--force` if it warns) so the new agents load into this session, and continue when they say it's done. If the `egm:` agent types still don't appear, use dispatch option 2 for those reviewers.
    Other harnesses (Cowork, Codex, Cursor, claude.ai): follow `references/egm-setup.md`.
@@ -115,9 +125,12 @@ Apply these on top of the builder's "Tone & pacing" section. They replace it whe
 - **One open question per turn in stages 1–3.** Ask open-ended questions and don't suggest candidate answers while discovering the problem; the user's own words expose their assumptions. (Ask the builder's product-category question the same way.) Offering options is fine for real decisions in stage 4.
 - **The owner decides forks.** Where the builder has a default (Strapi v5, PostgreSQL, Strapi Cloud, Users & Permissions, `src/api/<name>` modules), state it. Where it has none (the frontend, a tenancy model), lay out the options — how each works, its trade-offs, and when it fails — and let the user choose. Use the builder's own option lists where it has them, such as its four first-class frontends.
 - **A contradiction stops edits.** If a new answer contradicts an earlier decision, don't edit any file in that turn. Name both statements and ask which one wins.
-- **Check before you claim.** This covers claims that something is unsupported, required, broken, or can't run, and actions that are costly to undo: switching a runtime, skipping a step, calling a feature broken. A version range in `engines`, a README line or a config default records what someone *declared*, not what works.
+- **Check before you claim.** This covers claims that something is unsupported, required, broken, or can't run; install or setup commands you hand the user as working (slash commands only the user can type are exempt); and actions that are costly to undo: switching a runtime, skipping a step, calling a feature broken. A version range in `engines`, a README line or a config default records what someone *declared*, not what works.
   - Before you make such a claim or take such an action, try it, or read the installed source, and report what you saw.
-  - Before E8 in existing-app mode, "check" means read-only checks: read the code or the installed packages. Don't install or boot anything.
+  - A check counts only for the setup it ran in. If yours differed from the user's (something already installed, another computer, another permission mode), say how, or repeat the check in a setup that matches.
+    - For a fresh plugin install, set `HOME` and `CLAUDE_CONFIG_DIR` to a temporary folder and run the commands from a new empty folder, so nothing touches the user's settings or project. That matches a fresh install's settings only, not the user's computer or permission mode: still say those weren't matched.
+    - Never use a test like this to run a command the permission system blocked (Step 0 step 4).
+  - Before E8 in existing-app mode, "check" means read-only checks of the app: read the code or the installed packages. Don't install the app's dependencies or boot the app. Plugin-command tests in a new temporary folder don't touch the app and are allowed.
   - If you can't check (there's no code yet, or the action isn't allowed yet), write "not verified" and why.
   - Official docs stay a valid source for design statements. Cite them, and the fact-checker verifies them.
   - Never present an inference as a fact, to the user or in a document.

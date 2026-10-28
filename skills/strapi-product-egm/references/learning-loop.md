@@ -108,4 +108,4 @@ Use this when the user asks to "update the skill with what we learned", "fold th
 7. **Ask once:** commit and push (or open a pull request), or keep it local. Never push without a yes.
 8. **Close the loop.**
    - Set each lesson's status in its run folder: `applied in v<version>` (also for Merge), `held`, `upstream`, or `rejected — <why>`.
-   - Tell the user how to get the update, using the marketplace name from `claude plugin list --json`: `claude plugin marketplace update <marketplace>`, then `claude plugin update strapi-product-egm@<marketplace>`, then a new session.
+   - Tell the user how to get the update, using the marketplace name from `claude plugin list --json`: `claude plugin marketplace update <marketplace>`, then `claude plugin update strapi-product-egm@<marketplace>`, then a new session. For a project install, run both from the repo root and add `--scope project` to the second.

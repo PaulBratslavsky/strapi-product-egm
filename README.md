@@ -35,7 +35,15 @@ It also works on a Strapi app that already exists — whether or not it was plan
 
 ## Install (Claude Code)
 
-One command:
+**First, check for the `claude` command:** run `claude --version`. If it's not found, install Claude Code's command-line tool (macOS, Linux, WSL), then open a new terminal:
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Windows and other options: [Claude Code setup](https://code.claude.com/docs/en/setup).
+
+**For you, in every project:**
 
 ```bash
 claude plugin install strapi-product-egm --marketplace PaulBratslavsky/strapi-product-egm
@@ -43,9 +51,36 @@ claude plugin install strapi-product-egm --marketplace PaulBratslavsky/strapi-pr
 
 That installs this plugin and Google's EGM plugin with it. This repo's `.claude-plugin/marketplace.json` lists EGM as a pointer to Google's repo, so EGM is downloaded straight from `google/elephant-goldfish-model`; nothing of Google's is copied here.
 
-It installs for your user account, so it works in every project. To install it for one project only (recorded in that project's `.claude/settings.json`, so teammates get it too), add `--scope project`.
+**For one project, shared with your team:** from the project's root folder, run both commands:
 
-Then start a new session (or run `/reload-plugins` in an open one).
+```bash
+claude plugin marketplace add PaulBratslavsky/strapi-product-egm --scope project
+claude plugin install strapi-product-egm@strapi-product-egm --scope project
+```
+
+You need both. Adding `--scope project` to the one-command install records the plugin in the project, but this repo's address only in *your* settings, so a teammate's Claude Code wouldn't know where to download it from.
+
+Then commit `.claude/settings.json`: it records the plugin and where it comes from, in the repo. Teammates run the same two commands in their clone, and the file doesn't change. (Tested with Claude Code 2.1.312, both with an empty config and with the plugin already installed for the user. Whether Claude Code also offers the install when a teammate opens the project: not verified.)
+
+Then start a new session in that folder (or run `/reload-plugins` in an open one).
+
+**In the Claude desktop app:** open the project's root folder in the Code tab and paste:
+
+```text
+Install the strapi-product-egm plugin for this project only.
+
+First, tell me this folder's full path and wait for me to confirm it's the project's own folder. Then, from that folder, run:
+
+claude plugin marketplace add PaulBratslavsky/strapi-product-egm --scope project
+claude plugin install strapi-product-egm@strapi-product-egm --scope project
+
+If `claude` isn't found, stop and tell me. If a command is blocked, don't retry it or look for another way: give me that command and any after it to paste into the Terminal panel. Afterwards, check that .claude/settings.json lists the strapi-product-egm marketplace and plugin.
+```
+
+Then start a new session in that folder, and commit `.claude/settings.json`.
+
+- **Use the project's own folder,** not a temporary or hand-off folder: project settings live in that folder and go when it's deleted.
+- **Auto mode may block the first command.** Auto mode lets Claude run commands without asking you, behind a safety check that can stop some of them. In the one case seen so far, the first command was blocked once and allowed once (cause unknown). If it's blocked, paste the command into the Terminal panel yourself.
 
 **Already installed EGM from Google's own marketplace (`egm@egm`)?** Keep it — it works. If you'd rather have a single copy, install this repo's listing first, then remove Google's:
 
@@ -56,7 +91,7 @@ claude plugin uninstall egm@egm
 
 (In that order: updating this plugin doesn't add EGM by itself, so removing `egm@egm` first would leave you without EGM.)
 
-**Update later:** `claude plugin marketplace update strapi-product-egm`, then `claude plugin update strapi-product-egm@strapi-product-egm`.
+**Update later:** `claude plugin marketplace update strapi-product-egm`, then `claude plugin update strapi-product-egm@strapi-product-egm` (for a project install, run both from the project's folder and add `--scope project` to the second).
 
 **Recommended:** connect the Strapi docs MCP server in Claude Code under the name `strapi-docs`, so the fact-checker can query the official docs directly. Under any other name (for example a claude.ai connector), the fact-checker doesn't see it and falls back to fetching https://docs.strapi.io.
 
@@ -131,7 +166,7 @@ docs/field-notes/            findings and lessons from real runs
 
 - **Builder:** `scripts/sync-builder.sh /path/to/strapi-skills-checkout` copies the latest `strapi-product-builder` and records the commit in `builder/SOURCE.md`.
 - **Lessons:** see "It learns from its runs" above.
-- **EGM:** `claude plugin update egm@strapi-product-egm`. EGM is pre-1.0, so agent names may change; this plugin was written against EGM v0.1.0.
+- **EGM:** `claude plugin update egm@strapi-product-egm` (for a project install, from the project's folder with `--scope project`). EGM is pre-1.0, so agent names may change; this plugin was written against EGM v0.1.0.
 
 ## Credits
 

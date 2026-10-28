@@ -20,7 +20,7 @@ Use this when the user has a Strapi app that wasn't planned with this skill — 
 
 ## Safety rules
 
-- **Read-only until E8.** Before E8, the only files you write are the planning docs and reviews.
+- **Read-only until E8.** Before E8, the only files you write are the planning docs and reviews. One exception: Step 0's EGM install, with the user's yes. A project-scope install writes `.claude/settings.json` in the repo, and Step 0's scope question says so.
 - **Never read `.env` values.** Use `.env.example` and code for variable *names*. Never copy a secret into a doc or a prompt.
 - **E8 runs on a new git branch**, never pushes, and never touches production data or credentials. Migrations run against a local or dev database only.
 - **Before you boot anything in E8, ask the user once** whether the local `.env` points at any production service: database, payments, email, storage, or a paid API. You can't read it, so you need their answer. If it does, or they don't know, override every such variable on the command line (see "Running the checks"), or stop.

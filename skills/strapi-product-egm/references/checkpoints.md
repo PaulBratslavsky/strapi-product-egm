@@ -24,7 +24,7 @@ Choose the option **per reviewer** — the first one that works for that reviewe
 **Persona paths for option 2:**
 
 - **This skill's lenses:** `lenses/skeptical-customer.md`, `lenses/strapi-fact-checker.md`, and `lenses/strapi-code-auditor.md` in this skill's folder.
-- **EGM reviewers:** `<EGM root>/agents/` — `zoom_out.md`, `design_critic.md`, `comprehension.md`, `implementation_readiness.md`, `codebase_details.md`. In Claude Code, take `<EGM root>` from the `egm@egm` entry in `claude plugin list --json`. In Codex, use the installed plugin path from Codex's skill inventory or install metadata (see EGM's `docs/codex.md`). Never guess a path.
+- **EGM reviewers:** `<EGM root>/agents/` — `zoom_out.md`, `design_critic.md`, `comprehension.md`, `implementation_readiness.md`, `codebase_details.md`. In Claude Code, take `<EGM root>` from the `egm@…` entry in `claude plugin list --json` (`egm@strapi-product-egm`, or `egm@egm` if it was installed from Google's own marketplace). In Codex, use the installed plugin path from Codex's skill inventory or install metadata (see EGM's `docs/codex.md`). Never guess a path.
 - EGM personas refer to their standards by relative path, which a general-purpose subagent can't resolve. So for `zoom_out.md`, also pass `Target Standard: <EGM root>/resources/document_standards/zoom-out-standard.md`.
 
 **Fallback role lines** (option 3 only):
