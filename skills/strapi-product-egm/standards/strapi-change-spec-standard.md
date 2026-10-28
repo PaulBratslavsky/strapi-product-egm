@@ -23,6 +23,9 @@ Flag every place where the implementer would have to choose: a field type, a rou
 
 Each edit lists the exact files and the change, as code or a precise description. Paths to existing files must exist in the codebase; new files say where they go. A wrong or missing path is a Blocker.
 
+- **New code compiles** under the project's own settings (check `tsconfig.json` — for example `"strict": true`): types of values passed between new and existing code match. Code that breaks the build is a Blocker.
+- **Edit lists are complete**: when a spec lists lines to delete inside a function, every line that refers to something deleted is in the list. If that's hard to guarantee, replace the whole function.
+
 ## 4. Every caller is updated
 
 A change to a schema, a route, a response shape, a permission, or an environment variable lists **every** place that uses it — frontend data helpers, components, seed scripts, tests, MCP tools — and updates them in the same milestone. A missed caller is a Major, or a Blocker if it breaks a core flow.
@@ -44,6 +47,9 @@ A change to a schema, a route, a response shape, a permission, or an environment
 ## 7. Verification
 
 Each milestone says how to verify it: HTTP requests with the expected status, a test command, or a UI step. **Security fixes include a negative test** — for example, another user's record returns 403, or `?populate=*` returns no email.
+
+- **Security checks don't trust client-declared metadata.** An upload check uses the file extension **and** the file's bytes, not the multipart `Content-Type` alone; anything else is a Blocker (a file declared `image/png` can be HTML served from the Strapi origin).
+- **Verification is safe to run.** No step deletes local data (use a scratch database, e.g. `DATABASE_FILENAME=.tmp/scratch.db`, or back up first), and every expected result can actually happen in the state the step sets up.
 
 ## 8. Header
 

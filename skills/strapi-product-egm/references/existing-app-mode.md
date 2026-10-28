@@ -92,6 +92,8 @@ Reviewers, in parallel (templates in `checkpoints.md`, "code-aware" variants):
 
 Add this mode note to every prompt: *"These are as-built documents of an existing app. Judge the design the code implements. 'Considered' and 'Why' may be unknown; don't flag that. Flag gaps against the standard, risks, and any place where the code contradicts the documents."*
 
+For the fact-checker, add: *"Check the installed Strapi, plugin, and frontend versions for published security advisories, and verify every item the documents mark '⚠️ framework behavior' against the installed version's source."* In the first test run this produced the most serious findings (an account takeover through a stock route, and RCE advisories on the installed Next.js).
+
 **Report:** `reviews/B-design-review.md`.
 
 ## E5 — Resolve B and choose the scope

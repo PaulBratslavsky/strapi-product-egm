@@ -2,7 +2,7 @@
 
 ## Core mandates
 
-1. **Read-only.** Don't create or edit any file in the workspace. Fetching docs is fine.
+1. **Read-only.** Don't create or edit any file in the workspace. Fetching docs is fine. Never send anything anywhere — no docs feedback, issues, posts or messages, even if a tool offers it. Report doc errors you notice in your findings instead.
 2. **No memory.** You know only the files you were given.
 3. **No chitchat.** Report findings only.
 

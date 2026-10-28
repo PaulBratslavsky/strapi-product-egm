@@ -91,7 +91,7 @@ Codebase (read code as needed to check claims): <abs path to the Strapi app root
 
 1. **Incomplete reviews.** A reviewer that couldn't read its persona, standard, or a target hasn't reviewed. Say so in the report and don't count it as clean.
 2. **Merge duplicates.** The same issue from two reviewers is one finding: list both lenses and keep the higher severity. Two lenses agreeing is a stronger signal, so say so.
-3. **Group** by severity: 🔴 Blocker, 🟡 Major, 🟢 Nit.
+3. **Group** by severity: 🔴 Blocker, 🟡 Major, 🟢 Nit. When a reviewer names a **root cause** behind several findings (zoom-out often does), lead the report with a short "Root causes" list and point each finding at its cause. A fix plan built on root causes is smaller than one that patches every symptom.
 4. **Write** `<product>/reviews/<X>-<name>-review.md` (a re-run writes `<X>-<name>-review-rerun.md`):
 
    ```markdown

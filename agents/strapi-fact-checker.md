@@ -1,7 +1,7 @@
 ---
 name: strapi-fact-checker
 description: Goldfish reviewer for strapi-product-egm. Verifies version-sensitive Strapi v5 and frontend claims (CLI flags, config keys, APIs, package versions) in a product spec against current official docs. Read-only.
-tools: Read, Grep, Glob, WebFetch, WebSearch, mcp__strapi-docs__*
+tools: Read, Grep, Glob, WebFetch, WebSearch, mcp__strapi-docs__search_strapi_knowledge_sources
 model: inherit
 color: cyan
 omitClaudeMd: true
