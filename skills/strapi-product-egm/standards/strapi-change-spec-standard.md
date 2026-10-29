@@ -48,6 +48,8 @@ A change to a schema, a route, a response shape, a permission, or an environment
 
 Each milestone says how to verify it: HTTP requests with the expected status, a test command, or a UI step. **Security fixes include a negative test** — for example, another user's record returns 403, or `?populate=*` returns no email.
 
+- **A change to a frontend page or server handler is verified through the frontend** — a request to that page or handler, or a UI or end-to-end step — not only by calling Strapi directly. A milestone that changes a core-loop page also says what users see while it loads, with no data, and on error.
+
 - **Security checks don't trust client-declared metadata.** An upload check uses the file extension **and** the file's bytes, not the multipart `Content-Type` alone; anything else is a Blocker (a file declared `image/png` can be HTML served from the Strapi origin).
 - **Verification is safe to run.** No step deletes local data (use a scratch database, e.g. `DATABASE_FILENAME=.tmp/scratch.db`, or back up first), and every expected result can actually happen in the state the step sets up.
 - **An agent can run every check.** A check set-up step that needs clicking in the admin panel (create an admin, tick a permission, set a field) also gets a scripted version: an API call, a CLI command, or a query against the scratch database. Otherwise it's a Major. This is for check set-up only: permissions the app needs are seeded in `bootstrap()` (§5).

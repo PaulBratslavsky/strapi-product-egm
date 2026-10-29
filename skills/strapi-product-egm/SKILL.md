@@ -1,12 +1,14 @@
 ---
 name: strapi-product-egm
 description: >-
-  Plan a Strapi product with Google's Elephant-Goldfish Model (EGM) — a business-value-first
-  planning interview (idea → users → requirements → tech → Strapi spec → build spec) plus
-  fresh-context "goldfish" reviews that stress-test the product brief, the technical design, and
-  the build spec before any code is written. Also reviews an EXISTING Strapi app: reconstructs its
-  design from the code, checks it against Strapi standards, and turns the accepted findings into a
-  reviewed change spec (and, on request, implements it on a branch). Sets up the EGM plugin if it
+  Plan a whole product built on Strapi (the Strapi backend, the frontend, outside services, and
+  hosting) with Google's Elephant-Goldfish Model (EGM) — a business-value-first planning interview
+  (idea → users → requirements → tech → technical spec → build spec) plus fresh-context "goldfish"
+  reviews that stress-test the product brief, the technical design, and the build spec before any
+  code is written. Also reviews an EXISTING product built on Strapi — the Strapi app, its
+  frontend, and any other apps in the repo: reconstructs its design from the code, checks it
+  against the standards, and turns the accepted findings into a reviewed change spec (and, on
+  request, implements it on a branch). Sets up the EGM plugin if it
   is missing. Use when the user wants an EGM / elephant-goldfish / goldfish-reviewed product plan,
   asks to "stress-test" or get a "fresh-eyes review" of a Strapi product plan, build spec, or
   existing Strapi codebase, wants goldfish reviews of existing strapi-product-builder files
@@ -46,7 +48,7 @@ Where this file and `BUILDER.md` conflict, this file wins.
 |---|---|---|
 | **New product** (default) | The user has an idea and no code | This file, from Step 0 |
 | **Review-only** | The user has planning files (01–06) to check | Step 0 (steps 1–5), then "Review-only mode" below |
-| **Existing app** | The user has a Strapi codebase to review and improve | Step 0 (steps 1–5), then `references/existing-app-mode.md` |
+| **Existing app** | The user has a product built on Strapi (the Strapi app, its frontend, any other apps) to review and improve | Step 0 (steps 1–5), then `references/existing-app-mode.md` |
 | **Improve this skill** | The user wants lessons from earlier runs folded into this skill | Step 0 (steps 1–4), then `references/learning-loop.md`, section 3 |
 
 **In every mode:**
@@ -143,7 +145,7 @@ Apply these on top of the builder's "Tone & pacing" section. They replace it whe
 |---|---|
 | 1 | Ask three extra questions (from the Heilmeier catechism EGM uses): *How do people handle this today, and why does that fall short? What is the riskiest assumption — the one that, if wrong, makes the product pointless? What would you see in the first month that tells you it's working?* Record the answers in `01-product.md` as three extra sections after "The value": **Today's workaround**, **Riskiest assumption**, **Early signal**. |
 | End of 3 | Write the anchored hypothesis into `01-product.md` as a **Hypothesis** section (see the gate below). |
-| 5 | Add an **Operations (robustness sweep)** section to `05-tech-requirements.md`: one line per sweep item, saying where it's specified in 05, or "N/A — <reason>" if the user declined it. |
+| 5 | Add an **Operations (robustness sweep)** section to `05-tech-requirements.md`: one line per sweep item, saying where it's specified in 05, or "N/A — <reason>" if the user declined it. Also add **Outside services and other apps** (design standard §10) and **Hosting and environments** (§11) sections, and give each route in "Pages & components" the answers §9 asks for. §9 also needs a "Session" subsection under Auth and a "Server-side handlers" table (handler, the credential it calls Strapi with, what it checks first). |
 | 6 | `06-build-spec.md` never points at another stage file *instead of* giving the content. A background mention is fine only when the content itself is in 06 (this overrides the builder's "reference them as background"). Use the cookbook's full non-interactive scaffold flags — `--non-interactive --skip-cloud --no-example --no-git-init` plus the `--db*` flags; the builder's stage-6 reminder leaves out the middle two. |
 
 ---

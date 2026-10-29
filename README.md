@@ -2,7 +2,7 @@
 
 > **Experimental.** A test of Google's [Elephant-Goldfish Model](https://github.com/google/elephant-goldfish-model) (EGM) applied to Strapi's `strapi-product-builder` skill. Lessons from real runs go back into the builder.
 
-Turn a product idea into a build-ready spec for a **Strapi v5** project, and have it stress-tested by reviewers who have never seen your conversation, before any code is written.
+Turn a product idea into a build-ready spec for a whole product on **Strapi v5** (the Strapi backend, the frontend, outside services, and hosting), and have it stress-tested by reviewers who have never seen your conversation, before any code is written.
 
 The interview is Strapi's `strapi-product-builder`: business value first, then users, requirements, tech decisions, a Strapi technical spec, and a self-contained build spec (`01-product.md` … `06-build-spec.md`). This plugin adds EGM's reviews at three checkpoints.
 
@@ -17,19 +17,19 @@ The interview is Strapi's `strapi-product-builder`: business value first, then u
 | Checkpoint | After | Reviews | Reviewers |
 |---|---|---|---|
 | **A — Concept** | Stage 3 | Product, users, requirements | EGM zoom-out, design critic, and comprehension, plus a skeptical-customer lens |
-| **B — Design** | Stage 5 | Tech decisions and Strapi spec | EGM zoom-out and design critic, plus a Strapi fact-checker |
+| **B — Design** | Stage 5 | Tech decisions and technical spec: Strapi, frontend, outside services, hosting | EGM zoom-out and design critic, plus a Strapi fact-checker |
 | **C — Build readiness** | Stage 6 | The build spec, on its own | EGM implementation readiness and comprehension, plus the Strapi fact-checker |
 
 Checkpoint C is the important one. The build spec promises that a fresh coding agent can build from it alone, and reviewer C is that fresh agent.
 
 ### Existing apps
 
-It also works on a Strapi app that already exists — whether or not it was planned with this tool:
+It also works on a product built on Strapi that already exists, whether or not it was planned with this tool. It reviews the whole repo: the Strapi app, every frontend, any other apps (workers, other APIs), the outside services they call, and hosting.
 
 | Step | What happens | Checked by |
 |---|---|---|
 | Reconstruct | Claude asks a few questions, then writes the design docs **as built**, from the code, citing a file for every claim | **R** — EGM's codebase-details reviewer checks the docs against the code |
-| Review | The design and the code are reviewed against the Strapi standards | **B** — EGM design critic and zoom-out, plus a Strapi code auditor (traps with file:line evidence) and the fact-checker |
+| Review | The design and the code are reviewed against the standards | **B** — EGM design critic and zoom-out, plus a Strapi code auditor and a frontend auditor (traps with file:line evidence) and the fact-checker |
 | Plan the change | You pick which findings to fix; Claude writes a change spec with files, data steps, callers, tests, and rollback | **C** — EGM implementation readiness and codebase-details, plus the fact-checker |
 | Implement | Only if you say go: on a new branch, one commit per milestone, never pushed | — |
 
@@ -110,14 +110,14 @@ claude plugin uninstall egm@egm
 
 ### Review an existing app
 
-Built for Strapi v5 apps in a git repo.
+Built for products with a Strapi v5 backend, in a git repo. The review covers the whole repo, not only the Strapi app.
 
 1. **Install the plugin, if you haven't.** Use the project install under [Install (Claude Code)](#install-claude-code). In the Claude desktop app, use the install prompt from that section instead. Run it in the app repo's root folder (the git root, also for a monorepo). The project install adds `.claude/settings.json` to the repo, so your team gets the same setup. Skip this step if the plugin is already installed for you in every project.
 2. **Start a new session in the same folder.** A plugin installed during a session doesn't load until you start a new one (or run `/reload-plugins`). In the desktop app, open the folder again in the Code tab; in a terminal, `cd` to it and run `claude`.
 3. **Fill in the angle brackets and paste:**
 
    ```text
-   Use the strapi-product-egm skill to review this existing Strapi app and plan fixes (existing-app mode).
+   Use the strapi-product-egm skill to review this existing product and plan fixes (existing-app mode): the Strapi app, the frontend, and everything else in this repo.
 
    What I know so far (use it to draft your interview answers, then confirm them with me):
    - What I want out of this round: <e.g. a general health check, "auth feels fragile", "add team accounts">
@@ -192,11 +192,11 @@ This installs the skill folder without the plugin's agents. The skill then sets 
 
 ```
 .claude-plugin/              plugin.json (depends on egm) and marketplace.json
-agents/                      Claude Code adapters for the three Strapi lenses
+agents/                      Claude Code adapters for the four lenses
 skills/strapi-product-egm/
 ├── SKILL.md                 the EGM layer: setup, interview rules, checkpoints, resolve
-├── standards/               what "good" means at each checkpoint (Strapi-specific)
-├── lenses/                  Strapi reviewer roles (skeptical customer, fact-checker, code auditor)
+├── standards/               what "good" means at each checkpoint (Strapi, frontend, outside services, hosting)
+├── lenses/                  reviewer roles (skeptical customer, fact-checker, Strapi code auditor, frontend auditor)
 ├── references/              EGM setup, checkpoint dispatch, resolve protocol, existing-app mode, learning loop
 ├── templates/               the change-spec template (existing-app mode)
 └── builder/                 strapi-product-builder, copied unchanged (see SOURCE.md)

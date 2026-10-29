@@ -49,6 +49,7 @@ Flag every place where the build agent would have to choose something itself: a 
 - Content types are given as `schema.json` (Content-Type Builder format); components as JSON under `src/components/<category>/`.
 - The auth milestone matches the chosen path: Users & Permissions roles, or Better Auth's three plugins with Users & Permissions removed and providers configured.
 - The seed milestone creates users who can log in (see section 2) and seeds both roles' permissions in code.
+- Each frontend milestone names its routes and the data call behind each one. For protected routes, it says where the session is checked on the server; for core-loop routes, what users see while the page loads, with no data, and on error.
 
 ## 6. Internal consistency
 
@@ -59,7 +60,9 @@ The stack section, milestones, schemas, environment variables, and deployment st
 - A full list for backend and frontend, each with a description and an example value. No real secrets.
 - The public prefix (`NEXT_PUBLIC_`, `VITE_`, `PUBLIC_`, `NUXT_PUBLIC_`) appears only on browser-safe values. Server-only tokens are unprefixed — a prefixed `STRAPI_API_TOKEN` ships to the browser (Blocker).
 - Deployment steps for the chosen backend host — Strapi Cloud (create the project, link the repo, set env vars, set the Node version) or self-hosted (Dockerfile and a Postgres service) — and for the frontend host.
-- Better Auth path: `trustedOrigins` and cross-site cookie settings for production.
+- Better Auth path: `trustedOrigins`, and the cookie settings that the session option chosen in the design (shared parent domain or proxy) needs in production.
+- Strapi's CORS settings list the exact origins whose browsers call Strapi directly, for each environment, or say "none" when every call goes through the frontend's server or a proxy.
+- Each outside service has its environment variable names and the test mode used before launch (a sandbox or test key, a local mock, or a stub), so no milestone needs a production key.
 
 ## 8. Acceptance
 

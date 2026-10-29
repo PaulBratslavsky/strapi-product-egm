@@ -23,7 +23,7 @@ Choose the option **per reviewer** — the first one that works for that reviewe
 
 **Persona paths for option 2:**
 
-- **This skill's lenses:** `lenses/skeptical-customer.md`, `lenses/strapi-fact-checker.md`, and `lenses/strapi-code-auditor.md` in this skill's folder.
+- **This skill's lenses:** `lenses/skeptical-customer.md`, `lenses/strapi-fact-checker.md`, `lenses/strapi-code-auditor.md`, and `lenses/frontend-auditor.md` in this skill's folder.
 - **EGM reviewers:** `<EGM root>/agents/` — `zoom_out.md`, `design_critic.md`, `comprehension.md`, `implementation_readiness.md`, `codebase_details.md`. In Claude Code, take `<EGM root>` from the `egm@…` entry in `claude plugin list --json` (`egm@strapi-product-egm`, or `egm@egm` if it was installed from Google's own marketplace). In Codex, use the installed plugin path from Codex's skill inventory or install metadata (see EGM's `docs/codex.md`). Never guess a path.
 - EGM personas refer to their standards by relative path, which a general-purpose subagent can't resolve. So for `zoom_out.md`, also pass `Target Standard: <EGM root>/resources/document_standards/zoom-out-standard.md`.
 
@@ -76,21 +76,34 @@ Lens file: <abs path to this skill's lenses/<name>.md>
 
 The registered agents already know to read their lens file; the path is there for options 2 and 3.
 
-**Code-aware variants (existing-app mode).** Replace the platform note with the mode note from `existing-app-mode.md`, and add the codebase:
+**Code-aware variants (existing-app mode).** Replace the platform note with the mode note from `existing-app-mode.md`, and add the codebase and the folder rule:
 
 ```text
-Codebase (read code as needed to check claims): <abs path to the Strapi app root>, <abs path to the frontend root>
+Codebase (read code as needed to check claims): <abs path to every app root from E1>
+Folder rule: never open or search .env files (.env.example is fine), and skip node_modules except to check an installed package.
 ```
 
 - `egm-codebase-details` treats the codebase as its GoldfishContext.
-- `strapi-product-egm:strapi-code-auditor` gets the codebase as its **Targets**, plus `Target Standard:` and `Background: <abs path to 05>`.
-- `strapi-product-egm:strapi-fact-checker` also gets the `package.json` files as targets, so it can check the installed versions.
+- **The code auditors** get folders as targets, so their prompts say "search as needed" instead of "read in full":
+  - `strapi-product-egm:strapi-code-auditor`: `Targets (search as needed):` the Strapi app root and every frontend root, plus `Target Standard:`, `Background: <abs path to 03>, <abs path to 05>`, and the folder rule.
+  - `strapi-product-egm:frontend-auditor`: this prompt, plus the mode note:
+
+    ```text
+    Targets (search as needed): <abs path to every app root except the Strapi app>
+    Lens file: <abs path to this skill's lenses/frontend-auditor.md>
+    Target Standard: <abs path to reviews/standards/strapi-design-standard.md>
+    Background (read for context, do not review): <abs path to 03>, <abs path to 05>
+    Strapi app (read only the files the lens names): <abs path to the Strapi app root>
+    Folder rule: never open or search .env files (.env.example is fine), and skip node_modules except to check an installed package.
+    ```
+- `strapi-product-egm:strapi-fact-checker` also gets every app's `package.json` and lockfile as targets, and, where they exist, each app's `node_modules` folder for installed source, so it can check the installed versions.
 - Never include `.env` files in any list.
 
 ## 4. Consolidate
 
 1. **Incomplete reviews.** A reviewer that couldn't read its persona, standard, or a target hasn't reviewed. Say so in the report and don't count it as clean.
 2. **Merge duplicates.** The same issue from two reviewers is one finding: list both lenses and keep the higher severity. Two lenses agreeing is a stronger signal, so say so.
+   - Items a reviewer lists under **To confirm** (facts outside the code, such as admin-panel or host settings) aren't findings. They go to the user as ESCALATE items.
 3. **Group** by severity: 🔴 Blocker, 🟡 Major, 🟢 Nit. When a reviewer names a **root cause** behind several findings (zoom-out often does), lead the report with a short "Root causes" list and point each finding at its cause. A fix plan built on root causes is smaller than one that patches every symptom.
 4. **Write** `<product>/reviews/<X>-<name>-review.md` (a re-run writes `<X>-<name>-review-rerun.md`):
 
@@ -127,4 +140,4 @@ Ask the user to open a new chat outside any Project (so it can't see this one), 
 
 ## 6. Cost
 
-Each checkpoint runs three or four subagents. If the user asks for a more thorough review, run each EGM reviewer twice as independent instances and merge the results (EGM's A/B option). That catches more and doubles the cost.
+Checkpoint R runs one subagent; the others run three to five. If the user asks for a more thorough review, run each EGM reviewer twice as independent instances and merge the results (EGM's A/B option). That catches more and doubles the cost.

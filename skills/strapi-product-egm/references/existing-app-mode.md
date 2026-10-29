@@ -1,6 +1,6 @@
 # Existing-app mode
 
-Use this when the user has a Strapi app that wasn't planned with this skill — or whose plan no longer matches the code — and wants it reviewed and improved. It follows EGM's pattern for existing code: document what's there, check the documents against the code, review the design, then write and review a change plan before touching anything.
+Use this when the user has a product built on Strapi that wasn't planned with this skill — or whose plan no longer matches the code — and wants it reviewed and improved. The review covers the whole product in the repo: the Strapi app, every frontend, any other apps (workers, other APIs), the outside services they call, and hosting. It follows EGM's pattern for existing code: document what's there, check the documents against the code, review the design, then write and review a change plan before touching anything.
 
 ## The flow
 
@@ -22,14 +22,20 @@ Use this when the user has a Strapi app that wasn't planned with this skill — 
 
 - **Read-only until E8.** Before E8, the only files you write are the planning docs and reviews. One exception: Step 0's EGM install, with the user's yes. A project-scope install writes `.claude/settings.json` in the repo, and Step 0's scope question says so.
 - **Never read `.env` values.** Use `.env.example` and code for variable *names*. Never copy a secret into a doc or a prompt.
-- **E8 runs on a new git branch**, never pushes, and never touches production data or credentials. Migrations run against a local or dev database only.
-- **Before you boot anything in E8, ask the user once** whether the local `.env` points at any production service: database, payments, email, storage, or a paid API. You can't read it, so you need their answer. If it does, or they don't know, override every such variable on the command line (see "Running the checks"), or stop.
+- **E8 runs on a new git branch** (in each repo it changes), never pushes, and never touches production data or credentials. Migrations run against a scratch database only (see "Running the checks").
+- **E8 always overrides production settings.** Strapi and the frontend frameworks read their `.env` files themselves, and you can't read those files, so every override in "Running the checks" applies whatever the user says.
+- **Before you boot anything in E8, ask the user once** whether any app's local env files (`.env`, `.env.local`, and the like, in every app folder) point at a production service: database, payments, email, storage, a paid API, or a production Strapi URL and API token that a frontend or worker calls. If any does, list the variables you'll override and confirm none is missing. If you can't override one, stop.
 
 ---
 
 ## E1 — Find the app and interview the owner
 
-1. **Find the code.** The Strapi app is the folder whose `package.json` depends on `@strapi/strapi` (usually `.`, `backend/`, `server/`, `apps/cms/`, or `strapi/`). Frontends depend on `next`, `astro`, `nuxt`, `@tanstack/react-start`, and so on. Note the Strapi version from `package.json` and the lockfile, and the current commit (`git rev-parse --short HEAD`).
+1. **Map the whole repo.** List every app and package, not only Strapi and the frontend:
+   - The Strapi app is the folder whose `package.json` depends on `@strapi/strapi` (usually `.`, `backend/`, `server/`, `apps/cms/`, or `strapi/`).
+   - Frontends depend on `next`, `astro`, `nuxt`, `@tanstack/react-start`, and so on.
+   - Everything else counts too: workers, other APIs, scripts that write data, shared packages. Find them through the workspace settings (`workspaces` in the root `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `nx.json`) and every other `package.json` outside `node_modules`.
+
+   Note each app's root folder and the versions of Strapi and each frontend framework (from `package.json` and the lockfile), and the current commit of each repo (`git rev-parse --short HEAD`). Each reviewer later gets the app roots its row in E3, E4, or E7 names. If the Strapi app is the repo root, "the Strapi app" means that root without the other app roots inside it.
 2. **Read what's there:** README files, `CLAUDE.md` / `AGENTS.md`, existing docs. If the repo has earlier run folders (`docs/designs/*/reviews/review-log.md`), apply their open lessons (`learning-loop.md`, section 2).
 3. **Interview** — one question per turn, as in Step 1. Draft each answer from the README and code first, and ask the user to correct it:
    - What the app does and for whom (confirm your one-liner).
@@ -37,6 +43,7 @@ Use this when the user has a Strapi app that wasn't planned with this skill — 
    - **What's wrong, or what they want to change** — the goal of this round.
    - **Live constraints:** is it in production, with real users and data? Where is it deployed? This decides how careful data changes must be.
    - **What must not change:** public URLs, API consumers (mobile apps, other services), integrations.
+   - **Parts in other repos:** does any part of the product (a frontend, a worker, another API) live outside this repo? If it's on this computer, add its folder to the app roots. Otherwise record it under **Constraints** in `03` as out of scope for this review.
 4. **Write `01`–`03`** with the builder's templates, marked `> As-is — <date>` at the top. Keep them short. Add two sections to `03`: **Change goals** (the user's own words) and **Constraints** (live data, must-not-change).
 
 Checkpoint A is optional here. Offer it only if the change goals are about the product itself (a new audience, a new core loop).
@@ -45,7 +52,7 @@ Checkpoint A is optional here. Offer it only if the change goals are about the p
 
 Write `04-tech-decisions.md` and `05-tech-requirements.md` with the builder's templates, describing **what the code does**, not what it should do.
 
-- **Header:** `> As built — reconstructed from <repo> @ <commit>, <date>. Describes the code, not intentions.`
+- **Header:** `> As built — reconstructed from <repo> @ <commit>, <date>. Describes the code, not intentions.` If the product spans more than one repo, give one `<repo> @ <commit>` for each.
 - **Every claim cites a file** — for example `backend/src/api/summary/routes/summary.ts`. If you can't cite it, don't write it.
 - **A citation shows what a file says, not what works.** `"engines": "<=22"` in `package.json` is cited as "declared in `package.json`, not verified", never as "requires Node ≤ 22".
 - **Markers** (use these three, and no others):
@@ -55,6 +62,11 @@ Write `04-tech-decisions.md` and `05-tech-requirements.md` with the builder's te
 - **In 04, "Considered" is usually unknown.** Write "unknown (pre-existing)". Fill in "Why" only if the README or commit history says.
 - **No judgments.** "The `find` route has no owner filter" is a description. "This is insecure" is a finding — leave it for the reviewers.
 - **Include the Operations (robustness sweep) section,** with each line saying what the code does, or "not handled".
+- **Add the sections the design standard asks for that the builder's templates lack**, in `05`:
+  - "Outside services and other apps" (§10) and "Hosting and environments" (§11);
+  - for each route in "Pages & components", the answers §9 asks for, and which routes are on the core loop;
+  - a "Session" subsection under Auth (§9: storage, how it's sent, expiry);
+  - a "Server-side handlers" table for each frontend: handler, the credential it calls Strapi with, and what it checks first (§9).
 
 **Where to look (Strapi v5):**
 
@@ -71,8 +83,12 @@ Write `04-tech-decisions.md` and `05-tech-requirements.md` with the builder's te
 | Seed or export archives | `*.tar.gz` from `strapi export` (often `seed-data.tar.gz`): list the record types with `tar -xzOf <file> entities/entities_00001.jsonl`. Users & Permissions roles and permissions often live here rather than in code. |
 | Environment | `.env.example` — names only |
 | Migrations | `database/migrations` |
-| Frontend | its `package.json`, the route tree, the helpers that call Strapi, env var names, how the session is stored and sent |
-| Deployment | `Dockerfile`, CI workflows, hosting notes in the README |
+| CORS | the `strapi::cors` entry in `config/middlewares.*` |
+| Frontend | its `package.json`; the full route tree; server-side handlers (route handlers, server actions, `server/api`, API routes) and middleware or proxy files; the helpers that call Strapi or other services; caching and revalidation settings; env var names; how the session is stored, sent, and checked |
+| Other apps | each one's `package.json` and entry point; what calls it (a queue, a schedule, an HTTP route); what it writes |
+| Outside services | SDK imports and HTTP calls to other APIs (payments, email, AI, storage, search); the env var each key comes from; webhook handlers; what happens when a call fails |
+| Tests | test folders, end-to-end config (`playwright.config.*`, `cypress.config.*`), and the test steps in CI |
+| Deployment | `Dockerfile`, CI workflows, host config files (`vercel.json`, `netlify.toml`, `wrangler.toml`), hosting notes in the README |
 
 **Large codebase:** split the reading by area across helper subagents (for example Explore agents). They aren't goldfish — they read for you, and you write the docs. The user can also run `/egm:egm-bootstrap` first to generate per-folder READMEs.
 
@@ -80,7 +96,7 @@ Write `04-tech-decisions.md` and `05-tech-requirements.md` with the builder's te
 
 Checkpoint B reviews the docs. If the reconstruction is wrong, B reviews fiction — so check it first.
 
-- **Reviewer:** `egm:egm-codebase-details` in REVIEW mode. Targets: `04`, `05`. Target Standard: `standards/as-built-standard.md`. Codebase: the Strapi and frontend roots. (Prompt template in `checkpoints.md`.)
+- **Reviewer:** `egm:egm-codebase-details` in REVIEW mode. Targets: `04`, `05`. Target Standard: `standards/as-built-standard.md`. Codebase: every app root from E1. (Prompt template in `checkpoints.md`.)
 - **Report:** `reviews/R-reconstruction-review.md`.
 - **Resolve:** R's fixes correct facts, not decisions, so apply every PROPOSE FIX directly and list them for the user. ESCALATE items still go to the user. Re-run at most once.
 
@@ -92,12 +108,17 @@ Reviewers, in parallel (templates in `checkpoints.md`, "code-aware" variants):
 |---|---|---|---|
 | `egm:egm-design` | 04, 05 | `strapi-design-standard.md` | 03, codebase |
 | `egm:egm-zoom-out` | 04, 05 | its own | 03, `strapi-design-standard.md`, codebase |
-| `strapi-product-egm:strapi-code-auditor` | the codebase | `strapi-design-standard.md` | 05 |
-| `strapi-product-egm:strapi-fact-checker` | 04, 05, the `package.json` files | — | — |
+| `strapi-product-egm:strapi-code-auditor` | the Strapi app root and every frontend root | `strapi-design-standard.md` | 03, 05 |
+| `strapi-product-egm:frontend-auditor` | every app root except the Strapi app (frontends, workers, other APIs) | `strapi-design-standard.md` | 03, 05, and the Strapi app root (for the files its lens names) |
+| `strapi-product-egm:strapi-fact-checker` | 04, 05, every app's `package.json` and lockfile (and installed packages in `node_modules`, where they exist) | — | — |
 
-Add this mode note to every prompt: *"These are as-built documents of an existing app. Judge the design the code implements. 'Considered' and 'Why' may be unknown; don't flag that. Flag gaps against the standard, risks, and any place where the code contradicts the documents."*
+If E1 found no app root besides the Strapi app, leave out the frontend auditor and say so in the report.
 
-For the fact-checker, add: *"Check the installed Strapi, plugin, and frontend versions for published security advisories, and verify every item the documents mark '⚠️ framework behavior' against the installed version's source."* In the first test run this produced the most serious findings (an account takeover through a stock route, and RCE advisories on the installed Next.js).
+Both auditors read the frontend. The Strapi code auditor checks how the frontend uses Strapi's API; the frontend auditor checks the frontend against §6–11.
+
+Add this mode note to every prompt: *"These are as-built documents of an existing product. Judge the design the code implements across the whole product: the Strapi app, every frontend, any other apps, the outside services they call, and hosting. Parts that `03` lists as out of scope aren't reviewed; don't flag them as missing. 'Considered' and 'Why' in 04 may be unknown; don't flag that. Rules that require a stated reason for a risky choice still apply: flag those, and the owner can accept the risk. Flag gaps against the standard, risks, and any place where the code contradicts the documents."*
+
+For the fact-checker, add: *"Check the installed versions of Strapi, its plugins, each frontend framework, and the other apps' main packages for published security advisories, and verify every item the documents mark '⚠️ framework behavior' against the installed version's source."* In the first test run this produced the most serious findings (an account takeover through a stock route, and RCE advisories on the installed Next.js).
 
 **Report:** `reviews/B-design-review.md`.
 
@@ -143,7 +164,7 @@ If they say go:
 
 1. Check the working tree is clean. If not, stop and ask.
 2. Create a branch: `egm/<short-change-name>`.
-3. **Baseline: run the app before you change it.** Install, boot and build the Strapi app (and the frontend, if there is one) the way the README says. Then try the core loop once, and write down what already fails. Without a baseline you can't tell your bugs from old ones.
+3. **Baseline: run the app before you change it.** Install, boot and build the Strapi app, each frontend, and any other app the core loop needs, the way the README says. Then try the core loop once, and write down what already fails. Without a baseline you can't tell your bugs from old ones.
    - **Every rule in "Running the checks" applies to the baseline too.** Above all, use a scratch database, and use no production services.
    - **Use the runtime the user already has.** `engines` in `package.json` is a declaration, not a test, so try the current Node version first. A package manager that refuses because of `engines` is not evidence: retry with `--ignore-engines` (yarn 1) or `engine-strict=false` (npm). Finish the fresh-clone setup (next bullet) first. Switch versions only when an error points at the runtime itself, such as a native module that won't build or an unsupported API. Record that error, and record the version you used in `E8-implementation-log.md`.
    - **Fresh clones miss generated files.** Strapi writes `types/generated/` on the first `strapi develop`, and `public/uploads/` may be missing (create it). `strapi build` can fail on types until `develop` has run once. These are setup steps, not app bugs.
@@ -166,16 +187,18 @@ If they say go:
 
 ### Running the checks
 
-- **Use a scratch database**, never the user's data. Set every database variable on the command line, because `.env` may point somewhere else. For SQLite: `DATABASE_CLIENT=sqlite DATABASE_FILENAME=.tmp/<name>.db`. For Postgres: a throwaway database on localhost, with all `DATABASE_*` variables set explicitly.
-- **No production services.** Override, or leave unset, every variable for a paid or outward-facing service: payments, email, storage, AI keys. Use a mock or a test key instead.
+- **Overrides go on every command that loads env files:** install scripts, build, start, seed, and import. Leaving a variable off the command line doesn't unset it, because the app reads its `.env` files itself. Public-prefixed frontend variables are fixed at build time, so override them on the build too.
+- **Use a scratch database**, never the user's data. Set every database variable on the command line, taking the names from the Strapi app's `config/database.*`. For SQLite: `DATABASE_CLIENT=sqlite DATABASE_FILENAME=.tmp/<name>.db`. For Postgres: a throwaway database on localhost.
+- **No production services.** Set every variable for a paid or outward-facing service (payments, email, storage, AI keys) to an empty or fake value, or to a test key. Use a mock where a call must succeed.
+- **Point every frontend and worker at the local Strapi.** Set each one's Strapi URL (and API token, if it uses one) on the command line, because its env files may name a production instance.
 - **Restart Strapi after backend edits.** Auto-reload didn't pick up new files in Strapi 5.21. Confirm that the new code is live, for example that a new route no longer returns 404 or 405.
-- **Admin-panel steps can run headlessly, for check set-up only.** Set a field through the API or the scratch database, or simulate "ticking" a permission by inserting its row, and say which steps you replaced. Permissions the app itself needs are seeded in `bootstrap()` (change-spec standard §5), never by a database insert.
+- **Admin-panel steps can run headlessly, for check set-up only.** Set a field through the API or the scratch database, or simulate "ticking" a permission by inserting its row, and say which steps you replaced. Permissions that `06` adds or changes are seeded in `bootstrap()` (change-spec standard §5), never by a database insert. Permissions the app already relies on but doesn't seed in code (set in the admin panel) may be inserted into the scratch database for the baseline and checks; report that as a pre-existing problem.
 - **Third-party APIs without test keys:**
-  - Test the failure path with no key.
+  - Test the failure path with an empty or fake key.
   - For the success path, point the SDK at a small local mock through its base-URL setting, with a fake key (for example `OPENAI_BASE_URL` for the AI SDK's OpenAI provider).
   - A client with no base-URL setting gets a temporary stub instead (next bullet).
   - Never use the user's production keys.
-- **Temporary stubs in app code**, only to reach a check (for example, a canned transcript while the real API is down). Revert them before you commit, confirm that `git diff` shows no change to that file, and report the stub.
+- **Temporary stubs in app code**, only to reach a check (for example, a canned transcript while the real API is down). Revert them before you commit, confirm that `git diff` shows none of the stub's lines, and report the stub.
 - **Report what each check proved, and what it didn't**, for example "success path tested against a local mock, not real OpenAI". Don't round "not tested" up to "works".
 
 ## E9 — Close the loop
