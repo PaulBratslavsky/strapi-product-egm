@@ -99,7 +99,7 @@ claude plugin uninstall egm@egm
 
 - Start a plan: `/strapi-product-egm:strapi-product-egm`, or ask *"Plan my Strapi product with EGM reviews."*
 - Review files you already have: *"Run strapi-product-egm goldfish reviews on ./my-product"*. The skill runs the checkpoints that match the files present.
-- Review and improve an existing app: open a session in the app's repo and ask *"Use strapi-product-egm to review this Strapi app and plan fixes."* The docs and reviews go in `docs/designs/<app-name>/`. Nothing in the app changes unless you approve the change spec and say go.
+- Review and improve an existing app: see [Review an existing app](#review-an-existing-app) below.
 - Try it on the bundled example. From a clone of this repo, copy it out first, so the reviews don't write into the plugin:
 
   ```bash
@@ -107,6 +107,48 @@ claude plugin uninstall egm@egm
   ```
 
   Then, in a session in `~/trailhead-review`, ask *"Run strapi-product-egm goldfish reviews on this folder"*. Expect plenty of findings: the example was written before these standards existed. See [`docs/field-notes/`](docs/field-notes/) for a first run.
+
+### Review an existing app
+
+Built for Strapi v5 apps in a git repo.
+
+1. **Install the plugin, if you haven't.** Use the project install under [Install (Claude Code)](#install-claude-code). In the Claude desktop app, use the install prompt from that section instead. Run it in the app repo's root folder (the git root, also for a monorepo). The project install adds `.claude/settings.json` to the repo, so your team gets the same setup. Skip this step if the plugin is already installed for you in every project.
+2. **Start a new session in the same folder.** A plugin installed during a session doesn't load until you start a new one (or run `/reload-plugins`). In the desktop app, open the folder again in the Code tab; in a terminal, `cd` to it and run `claude`.
+3. **Fill in the angle brackets and paste:**
+
+   ```text
+   Use the strapi-product-egm skill to review this existing Strapi app and plan fixes (existing-app mode).
+
+   What I know so far (use it to draft your interview answers, then confirm them with me):
+   - What I want out of this round: <e.g. a general health check, "auth feels fragile", "add team accounts">
+   - Live constraints: <in production with real users and data? where it's hosted? or "local only, no real data">
+   - Must not change: <public URLs, a mobile app using the API, integrations, or "nothing in particular">
+
+   Take it through checkpoint C (the reviewed change spec), then stop. Don't change any app code until I say go.
+   ```
+
+What happens next:
+
+1. The skill reads the code and asks a few short questions, one at a time.
+2. It writes "as built" design docs (`01`–`05`) in `docs/designs/<app-name>/` and has a reviewer check them against the code (`reviews/R-reconstruction-review.md`). It may ask about things the code can't show, such as permissions set in the admin panel, or hosting.
+3. It runs the design review (`reviews/B-design-review.md`), and you pick which findings to fix.
+4. It writes a change spec (`06-change-spec.md`) and has it reviewed (`reviews/C-change-readiness-review.md`).
+
+Along the way it asks you to decide anything a reviewer can't settle.
+
+**Only want the findings?** Replace the prompt's last paragraph with: *"Stop after the design review (checkpoint B) and give me the reports."*
+
+**When you're ready to implement,** reply in the same session: *"Go: implement the change spec."* Before you do:
+
+- Commit your changes, including the new `docs/designs/` files (the skill needs them, so don't stash them). If the working tree isn't clean, the skill stops and asks.
+- Expect it to ask whether your local `.env` points at any production service (database, payments, email, storage, a paid API). It never reads `.env`, so it needs your answer.
+- It works on a new git branch, runs its checks against a scratch database, and never pushes.
+
+Until you say go, the skill changes no app code. It only adds the docs under `docs/designs/<app-name>/`.
+
+**If the skill doesn't start** (Claude doesn't mention strapi-product-egm, or starts reviewing without asking you anything), start again with `/strapi-product-egm:strapi-product-egm` at the front of the prompt.
+
+(This prompt follows the skill's existing-app steps but hasn't yet been run from start to finish.)
 
 ## What you get
 
