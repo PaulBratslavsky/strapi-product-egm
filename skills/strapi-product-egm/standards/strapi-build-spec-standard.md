@@ -46,9 +46,10 @@ Flag every place where the build agent would have to choose something itself: a 
 
 - In order, and each has a **"Done when"** that a person or a test can check.
 - Each milestone leaves the project bootable.
-- Content types are given as `schema.json` (Content-Type Builder format); components as JSON under `src/components/<category>/`.
+- Content types are given as `schema.json` (Content-Type Builder format), each with its path (`src/api/<api>/content-types/<name>/schema.json`) and its core router, controller and service files. A schema alone gets no REST routes, so missing core files are a Major. Components are JSON under `src/components/<category>/`.
+- On the Better Auth path, every content type is created before the auth milestone. Only the attributes that target the generated `user` wait for its generate step, and they're added then as one-way relations (no `inversedBy`), with a `target` read from what the generate step created. That is a lookup, not an open decision. Deferring whole types breaks every type that relates to them: a Blocker.
 - The auth milestone matches the chosen path: Users & Permissions roles, or Better Auth's three plugins with Users & Permissions removed and providers configured.
-- The seed milestone creates users who can log in (see section 2) and seeds both roles' permissions in code.
+- Both roles' permissions are seeded idempotently in `bootstrap()`: with the content model on the Users & Permissions path, in the auth milestone on the Better Auth path. The seed milestone creates users who can log in (see section 2).
 - Each frontend milestone names its routes and the data call behind each one. For protected routes, it says where the session is checked on the server; for core-loop routes, what users see while the page loads, with no data, and on error.
 
 ## 6. Internal consistency
@@ -60,6 +61,9 @@ The stack section, milestones, schemas, environment variables, and deployment st
 - A full list for backend and frontend, each with a description and an example value. No real secrets.
 - The public prefix (`NEXT_PUBLIC_`, `VITE_`, `PUBLIC_`, `NUXT_PUBLIC_`) appears only on browser-safe values. Server-only tokens are unprefixed — a prefixed `STRAPI_API_TOKEN` ships to the browser (Blocker).
 - Deployment steps for the chosen backend host — Strapi Cloud (create the project, link the repo, set env vars, set the Node version) or self-hosted (Dockerfile and a Postgres service) — and for the frontend host.
+- The deployed project's first admin is created right after the first deploy, as a user step. Until then, anyone who opens `/admin` can register as super admin, so a later step is a Major.
+- The frontend's API token is a custom token limited to the read actions it calls. A read-only or full-access token is a Major (design standard §9).
+- Users & Permissions path with email confirmation or social login: `url` in `config/server.ts`, read from an env var set to Strapi's public URL.
 - Better Auth path: `trustedOrigins`, and the cookie settings that the session option chosen in the design (shared parent domain or proxy) needs in production.
 - Strapi's CORS settings list the exact origins whose browsers call Strapi directly, for each environment, or say "none" when every call goes through the frontend's server or a proxy.
 - Each outside service has its environment variable names and the test mode used before launch (a sandbox or test key, a local mock, or a stub), so no milestone needs a production key.

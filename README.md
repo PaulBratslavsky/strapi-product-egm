@@ -206,7 +206,7 @@ docs/field-notes/            findings and lessons from real runs
 
 ## Keeping it current
 
-- **Builder:** `scripts/sync-builder.sh /path/to/strapi-skills-checkout` copies the latest `strapi-product-builder` and records the commit in `builder/SOURCE.md`.
+- **Builder:** `scripts/sync-builder.sh /path/to/strapi-skills-checkout` copies the latest `strapi-product-builder` and records the commit in `builder/SOURCE.md`. Until https://github.com/strapi/skills/pull/10 merges, pass its branch as the second argument (`origin/skills/product-builder-review-lessons`): main's builder is older than this plugin's standards.
 - **Lessons:** see "It learns from its runs" above.
 - **EGM:** `claude plugin update egm@strapi-product-egm` (for a project install, from the project's folder with `--scope project`). EGM is pre-1.0, so agent names may change; this plugin was written against EGM v0.1.0.
 

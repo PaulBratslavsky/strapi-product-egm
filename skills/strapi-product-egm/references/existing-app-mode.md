@@ -62,11 +62,11 @@ Write `04-tech-decisions.md` and `05-tech-requirements.md` with the builder's te
 - **In 04, "Considered" is usually unknown.** Write "unknown (pre-existing)". Fill in "Why" only if the README or commit history says.
 - **No judgments.** "The `find` route has no owner filter" is a description. "This is insecure" is a finding — leave it for the reviewers.
 - **Include the Operations (robustness sweep) section,** with each line saying what the code does, or "not handled".
-- **Add the sections the design standard asks for that the builder's templates lack**, in `05`:
-  - "Outside services and other apps" (§10) and "Hosting and environments" (§11);
+- **Fill in the 05 template's sections that the design standard checks**, even where the code has nothing for them (then say so):
+  - "Outside services and other apps" (§10) and "Hosting & environments" (§11);
   - for each route in "Pages & components", the answers §9 asks for, and which routes are on the core loop;
-  - a "Session" subsection under Auth (§9: storage, how it's sent, expiry);
-  - a "Server-side handlers" table for each frontend: handler, the credential it calls Strapi with, and what it checks first (§9).
+  - "Session" (§9: storage, how it's sent, expiry);
+  - "Server-side handlers", for each frontend: handler, the credential it calls Strapi with, and what it checks first (§9).
 
 **Where to look (Strapi v5):**
 

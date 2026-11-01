@@ -50,15 +50,18 @@ Apply the checks for the auth path chosen in 04.
 - Per-record ownership uses an `is-owner` policy on `update` and `delete`. "Only my records" reads query the Document Service server-side, not with client filters on a private relation.
 - Other users' identity in responses is trimmed to safe fields (`id`, `documentId`, a display name). No route lists all users.
 - Authorization gates (plan limits, quotas, role checks) are route policies.
+- Public gets no upload-plugin action: `find` lists every file in the media library, and media fields populate without it. Authenticated gets `upload` only if users upload files, never `find` or `destroy`. A Public upload grant is a Major.
 
 **Users & Permissions path (default):**
 
 - The current user comes only from `/api/users/me`. `user.find` is never granted — it lets any signed-in user list every account's email.
+- `user.update` is never granted either. The stock `PUT /api/users/:id` has no ownership check, so any signed-in user can edit any account, including its role. Granting it is a Blocker.
+- If email confirmation or social login is on, `config/server.ts` sets `url` to Strapi's public URL. Users & Permissions builds those links from it; without it, production links point at `http://0.0.0.0:1337`. Missing is a Major.
 
 **Better Auth path:**
 
 - Permissions are described and seeded in `plugin-api-permissions` terms, because Users & Permissions is removed.
-- The `user` content type's UID (from the Better Auth generate step) is stated, and so is how a controller reads the signed-in user.
+- The generated `user` content type's UID, and how a controller reads the signed-in user, are stated, or left to a named build step right after the generate step. Both are only known once it runs, so the step is enough.
 
 ## 5. Where logic lives
 
@@ -105,7 +108,7 @@ Applies to every frontend in the product (usually 05's "Pages & components" and 
   - Sign-in, sign-up, and password-reset handlers, and code that only reads public content, need no session.
   - Handlers called by machines (a Strapi webhook, a schedule) check a shared secret or a signature instead.
 - **Server-side handlers don't widen access.** Code that calls Strapi with an API token acts with that token's rights, for any visitor who reaches it. The design says which credential each handler uses and what it checks first.
-  - A public read uses a read-only token. A full-access token there is a Major.
+  - A public read that sends a token uses a custom API token limited to the read actions it calls (a public read with no credential needs none). A read-only or full-access token there is a Major: the read-only type passes every action ending in `find` or `findOne`, including `GET /api/users`, which lists every account's email.
   - A Blocker: an API token used for a write, or reached by visitor input (path, `filters`, `populate`, `fields`, or body) passed through to the Strapi call, without a check of the user first.
 - **Each core-loop page has its states:** what users see while it loads, when there's no data yet, and when a call fails (Strapi unreachable, permission denied, invalid input). A missing state is a Major. (Seen in a test run: undefined empty and error states left the build agent guessing.)
 - **Public pages that need search traffic** (if 03 says so) say where each route's title, description, and share image come from. Missing is a Major.

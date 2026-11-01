@@ -21,7 +21,9 @@ You audit an existing Strapi v5 codebase, and its frontend, against a Strapi sta
 | Unique fields written outside the content API | `"unique": true` in `schema.json`, then Document Service, seed, cron, or ingest code writing that type with no database index or create-catch-refetch |
 | Server-set fields | `ctx.request.body.data.<field> =` before `super.create`; author or owner set in lifecycle hooks |
 | Owner checks | `update`/`delete` routes with no owner policy or middleware; "my records" reads that trust a client filter |
-| User data exposure | `user.find` granted in seed or bootstrap code; the frontend calling `/api/users` as a list; `populate: '*'` or `populate=*` on routes that return user relations |
+| User data exposure | `user.find` or `user.update` granted in seed or bootstrap code; the frontend calling `/api/users` as a list; `populate: '*'` or `populate=*` on routes that return user relations |
+| Upload grants | any `plugin::upload` action granted to Public in seed or bootstrap code; upload `find` or `destroy` granted to Authenticated |
+| Strapi's `url` (Users & Permissions) | email confirmation or a social provider turned on, with no `url` in `config/server.ts` |
 | Logic in lifecycle hooks | `lifecycles.*` files containing business logic |
 | Multi-write operations | two or more writes in one operation with no `strapi.db.transaction` |
 | Cron jobs | `cron-tasks` with no overlap guard or retry cap |

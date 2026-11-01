@@ -70,7 +70,7 @@ One `egm:egm-comprehension` reviewer read every changed file: 🔴 2 · 🟡 9 �
 - **The Blocker:** "override, or leave unset" didn't unset anything, because Strapi and the frontend frameworks read their `.env` files themselves. So a baseline could have run with real payment or email keys. Overrides now apply on every command that loads env files, whatever the user answers, with empty or fake values.
 - **Majors:**
   - Access is tied to where private data is read: on the frontend's server, or from the browser with the user's own credential.
-  - Public reads with an API token: read-only passes, full-access is a Major, and a write or a passed-through visitor input is a Blocker.
+  - Public reads with an API token: read-only passes, full-access is a Major, and a write or a passed-through visitor input is a Blocker. (Changed in v0.3.1: read-only is a Major too. See the 2026-10-31 note.)
   - An N/A passes only its own sweep line; "not handled" is graded as missing; "the product's value depends on it" is defined.
   - The frontend auditor may read named Strapi files, and reports settings outside the code under "To confirm", which become escalations.
   - Both auditors get 03 for the core loop.
@@ -97,12 +97,12 @@ The frontend auditor ran as a general-purpose subagent (dispatch option 2), from
 
 ## Upstream candidates (strapi-product-builder)
 
-`builder/` is a synced copy, so these are for the pull request to `strapi/skills`, not edits here:
+`builder/` is a synced copy, so these went to the pull request to `strapi/skills`, not edits here:
 
 - 05 template: add "Outside services and other apps" and "Hosting and environments" sections.
 - 05 template: in "Pages & components", give each route its access, data source and credential, rendering, and states.
 
-Until then, this skill's stage-5 override and E2 ask for them.
+Done: https://github.com/strapi/skills/pull/10 adds both (still a draft). v0.3.1 synced `builder/` from that branch at `648a079` and removed the overrides the new builder covers (see the 2026-10-31 note).
 
 ## Not verified
 

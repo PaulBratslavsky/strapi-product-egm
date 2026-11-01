@@ -36,7 +36,7 @@ The interview is Strapi's `strapi-product-builder`, copied unchanged into `build
 This file adds only the EGM layer:
 
 1. **EGM setup** — Step 0.
-2. **Elephant rules** and a few stage overrides — Step 1.
+2. **Elephant rules** and two stage overrides — Step 1.
 3. **Three goldfish checkpoints** with Strapi-specific standards — A after stage 3, B after stage 5, C after stage 6.
 4. **A resolve protocol** for findings, and a review log.
 
@@ -62,7 +62,7 @@ Where this file and `BUILDER.md` conflict, this file wins.
 
 ```
 <product-name>/
-├── 01-product.md … 06-build-spec.md   # the builder's six files (same templates, a few extra sections)
+├── 01-product.md … 06-build-spec.md   # the builder's six files (same templates, plus the stage overrides)
 └── reviews/
     ├── standards/                     # copies of the standards the reviewers applied
     ├── A-concept-review.md
@@ -143,10 +143,8 @@ Apply these on top of the builder's "Tone & pacing" section. They replace it whe
 
 | Stage | Change to the builder |
 |---|---|
-| 1 | Ask three extra questions (from the Heilmeier catechism EGM uses): *How do people handle this today, and why does that fall short? What is the riskiest assumption — the one that, if wrong, makes the product pointless? What would you see in the first month that tells you it's working?* Record the answers in `01-product.md` as three extra sections after "The value": **Today's workaround**, **Riskiest assumption**, **Early signal**. |
 | End of 3 | Write the anchored hypothesis into `01-product.md` as a **Hypothesis** section (see the gate below). |
-| 5 | Add an **Operations (robustness sweep)** section to `05-tech-requirements.md`: one line per sweep item, saying where it's specified in 05, or "N/A — <reason>" if the user declined it. Also add **Outside services and other apps** (design standard §10) and **Hosting and environments** (§11) sections, and give each route in "Pages & components" the answers §9 asks for. §9 also needs a "Session" subsection under Auth and a "Server-side handlers" table (handler, the credential it calls Strapi with, what it checks first). |
-| 6 | `06-build-spec.md` never points at another stage file *instead of* giving the content. A background mention is fine only when the content itself is in 06 (this overrides the builder's "reference them as background"). Use the cookbook's full non-interactive scaffold flags — `--non-interactive --skip-cloud --no-example --no-git-init` plus the `--db*` flags; the builder's stage-6 reminder leaves out the middle two. |
+| 5 | In 05's **Outside services and other apps** table, also give each service the side that calls it (Strapi, the frontend's server, or the browser) and the env var that holds its key, and say under "If it fails" how the team finds out (design standard §10). The builder's table has no place for these yet. |
 
 ---
 
@@ -215,7 +213,7 @@ If the user already has builder files, skip the interview:
 3. Resolve each one. Ask before editing files that weren't written in this session.
 4. Write the review log. The lessons are the main output of a review-only run.
 
-Files made by the builder without this skill lack the extra sections (Hypothesis, Operations). Expect the reviewers to flag that, and treat those findings as lessons for the builder.
+Files made by the builder without this skill lack the Hypothesis section. Files from older builder versions may also lack the three stage-1 sections in 01 and the 05 sections the design standard checks, Operations among them. Expect the reviewers to flag that, and treat those findings as lessons for the builder.
 
 **Files nobody here owns** (the bundled example, a third party's plan): there's no owner to confirm the hypothesis or answer the resolve gate. Draft the hypothesis for the zoom-out reviewer only, mark it unconfirmed, and don't write it into 01. Label findings as usual, apply no edits unless the user asks, and put the effort into the review log.
 
