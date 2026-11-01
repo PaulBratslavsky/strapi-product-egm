@@ -59,7 +59,7 @@ Write `04-tech-decisions.md` and `05-tech-requirements.md` with the builder's te
   - `⚠️ not in code — <what to confirm>`: something the code can't tell you, such as permissions clicked in the admin panel, data in the database, or hosting settings. Collect these and ask the user in one message at the end of E2.
   - `⚠️ framework behavior — <claim>`: the claim depends on how the installed framework behaves, for example "stock `PUT /api/users/:id` has no owner check". The fact-checker verifies these at B against the installed source.
   - `not verified — <why>`: a claim nobody has tried, such as runtime support.
-- **In 04, "Considered" is usually unknown.** Write "unknown (pre-existing)". Fill in "Why" only if the README or commit history says.
+- **In 04, "Considered" is usually unknown.** Write "unknown (pre-existing)", and "pre-existing" under the frontend's **Chosen by**. Fill in "Why" only if the README or commit history says.
 - **No judgments.** "The `find` route has no owner filter" is a description. "This is insecure" is a finding — leave it for the reviewers.
 - **Include the Operations (robustness sweep) section,** with each line saying what the code does, or "not handled".
 - **Fill in the 05 template's sections that the design standard checks**, even where the code has nothing for them (then say so):

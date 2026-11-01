@@ -3,7 +3,7 @@
 This folder is a copy of the `strapi-product-builder` skill. The EGM skill (`../SKILL.md`) runs it as its interview and adds goldfish reviews on top.
 
 - **Upstream:** https://github.com/strapi/skills — `skills/in-progress/strapi-product-builder`
-- **Commit:** `648a07999af223c1ff5c5a6b0f527d5f39f662d6`
+- **Commit:** `9f389bb2645d5614f145792af91e8e64287588f1`
 - **Note:** this commit is on the branch of https://github.com/strapi/skills/pull/10, which isn't merged yet. Until it is, re-sync from `origin/skills/product-builder-review-lessons`: main's builder is older and lacks sections this skill no longer adds itself. Delete this note once you sync from `origin/main`.
 
 ## What changed from upstream

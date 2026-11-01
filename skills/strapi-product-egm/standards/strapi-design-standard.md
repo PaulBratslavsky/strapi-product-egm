@@ -14,7 +14,7 @@ Severity guide: a gap that would corrupt data, leak user data, or block the core
 
 - Every area records **Choice · Considered · Why**. A non-default choice with nothing under "Considered" fails EGM's alternatives rule (Major).
 - Defaults (Strapi v5, PostgreSQL, Strapi Cloud, Users & Permissions) are stated as defaults; each override has a reason.
-- The **frontend framework** is chosen explicitly. There is no silent default.
+- The **frontend framework** is chosen explicitly by the user. There is no silent default. 04's **Chosen by** quotes their answer to the framework question. A framework that was only recommended, or approved as part of a list of recommendations, is a Major. In as-built documents (existing-app mode), **Chosen by** says "pre-existing".
 - **Auth:** Users & Permissions (default), or Better Auth with its status stated — beta and not for production per its maintainers, needs Strapi ≥ 5.45, requires removing Users & Permissions, and moves permissions to `plugin-api-permissions` (alpha).
 - **MCP server:** off unless 03 asks for AI-agent access to content. If on: Strapi ≥ 5.49, admin-token scope, and whether agents do real work (then purpose-built tools with tokens scoped to them — the generic CRUD tools have overwritten content) or only browse.
 - **Module layout:** `src/api/<name>` folders by default. Local plugins only with a stated reason: admin-panel UI, reuse across projects, or distribution.
